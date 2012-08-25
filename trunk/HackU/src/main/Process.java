@@ -164,7 +164,7 @@ public class Process {
 		}
 		
 		if(srcStation != null && destStation != null){
-			Result result = createResultTrain(TrainsBetweenStations.trainsBetweenStations(srcAirport.code1, destAirport.code1, startDate, endDate));
+			Result result = createResultTrain(TrainsBetweenStations.trainsBetweenStations(srcStation.code, destStation.code, startDate, endDate));
 			results.add(result);
 		}
 		
