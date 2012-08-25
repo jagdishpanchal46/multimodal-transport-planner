@@ -1,5 +1,6 @@
 package main;
 import flight.*;
+import rail.*;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -141,7 +142,7 @@ public class Process {
 		}
 	}
 
-	public static void main(String args[]){
+	public static void main(String args[]) throws InterruptedException{
 		init();
 		
 		//TODO take these inputs from a json file
@@ -159,12 +160,12 @@ public class Process {
 		List<JSONObject> results = new ArrayList<JSONObject>();
 		
 		if(srcAirport != null && destAirport != null){
-			Result result = createResultFlight(FlightsBetweenStations.flightsBetweenStations(srcAirport.code1, destAirport.code1, startDate, endDate));
-			results.add(result);
+			//Result result = createResultFlight();			
+			results.add(FlightsBetweenStations.flightsBetweenStations(srcAirport.code1, destAirport.code1, startDate, endDate));
 		}
 		
 		if(srcStation != null && destStation != null){
-			Result result = createResultTrain(TrainsBetweenStations.trainsBetweenStations(srcStation.code, destStation.code, startDate, endDate));
+			JSONObject result = createResultTrain(TrainsBetweenStations.trainsBetweenStations(srcStation.code, destStation.code, startDate, endDate));
 			results.add(result);
 		}
 		
@@ -189,9 +190,8 @@ public class Process {
 
 			try {			
 				Iterator<Airport> it = allAirports.iterator();
-				Airport currentAirport;
+				Airport currentAirport = null;
 				while(it.hasNext()){
-					//hbaseConn.getUserTable().deleteRow(r.getRow());
 					
 					if(!wasRefused){
 						currentAirport = it.next();
@@ -203,7 +203,7 @@ public class Process {
 						
 						// spawn a crawler 
 						//crawlerThreadPool.execute(new UserCrawler(frontier,userService,repoService,gistService,writerThreadPool,dbConnection));
-						JSONObject temp;
+						JSONObject temp = null;
 						crawlerThreadPool.execute(new FlightsBetweenStationsRunnable(srcAirport.code1, currentAirport.code1, startDate, endDate, temp));
 						results.add(temp);
 						wasRefused = false;
@@ -219,6 +219,9 @@ public class Process {
 						// roll back
 						wasRefused=true;
 						//numTweetsProcessed --;
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					} finally{															
 					}
 				}			  
@@ -243,9 +246,6 @@ public class Process {
 						//logger.info("The crawler has been shut down successfully");
 						//writerThreadPool.shutdown();
 						//writerThreadPool.awaitTermination(10, TimeUnit.MINUTES);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
 					} finally {
 					}
 				}
@@ -275,8 +275,8 @@ public class Process {
 		return null;
 	}
 	
-	public static Result createResultFlight(JSONObject flight){
-		//
+	public static JSONObject createResultTrain(JSONObject train){
+		return train;
 	} 	
 	
 }
@@ -314,11 +314,4 @@ class Station{
 		this.address = json.getString("address");
 		this.state = json.getString("state");
 	}	
-}
-
-class Result{
-	// A result as finally shown on the website
-	public Result(){
-		
-	}
 }
