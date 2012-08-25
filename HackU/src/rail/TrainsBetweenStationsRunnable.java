@@ -1,17 +1,36 @@
 package rail;
-import java.io.IOException;
-import java.net.URL;
 
-import org.json.*;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import utils.Utils;
 
-public class TrainsBetweenStations {
-	public static void main(String args[]){
-		System.out.println(trainsBetweenStations("JHS", "CNB", "2S", "20120826"));
+public class TrainsBetweenStationsRunnable implements Runnable {
+	//private static final boolean DEBUG = true;
+
+	// Attributes	
+	String station1;
+	String station2;
+	String date;
+	String Class;
+	JSONObject json; 
+	
+	//Constructors
+	public TrainsBetweenStationsRunnable(String _station1, String _station2, String _date, String _Class, JSONObject _json){
+		this.station1 = _station1;
+		this.station2 = _station2;
+		this.date = _date;
+		this.Class = _Class;
+		this.json = _json;
 	}
 	
-	public static JSONObject trainsBetweenStations(String station1, String station2, String Class, String date){
+	@Override
+	public void run(){
 		String urlString = "http://www.cleartrip.com/trains/results?";
 		urlString += "from_station="+station1;
 		urlString += "&to_station="+station2;
@@ -28,22 +47,12 @@ public class TrainsBetweenStations {
 			url = new URL(urlString);
 			String doc = Utils.readPage(url);
 			//doc = Jsoup.connect("http://www.google.com").get();
-			String json = doc.toString().split("trains:")[1];
-			json = json.split("trips:")[0];
+			String jsonTemp = doc.toString().split("trains:")[1];
+			jsonTemp = jsonTemp.split("trips:")[0];
 			//System.out.println(json);			
-			JSONObject jsonObject = new JSONObject(json);
+			JSONObject jsonObject = new JSONObject(jsonTemp);
 			//System.out.println(jsonObject.toString());
-			return jsonObject;
-			/**
-			Element body = doc.getElementsByTag("body").first();
-			Element para = body.getElementsContainingOwnText("URL: ").first();
-			String text = para.text();
-			  
-			url = text.substring(6, text.length()-2); //URL: "http://onion.com/I9bAm1"
-			//System.out.println(allUrls[i]);
-			//domainName = (new URL(url)).getHost();
-			 * 
-			 */
+			json = jsonObject;
 		} catch (IOException e) {
 			e.printStackTrace();
 			//System.err.println(url);
@@ -54,7 +63,6 @@ public class TrainsBetweenStations {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		return null;
+		}		
 	}
 }
