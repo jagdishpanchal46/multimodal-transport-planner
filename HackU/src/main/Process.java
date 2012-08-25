@@ -275,7 +275,8 @@ public class Process {
 		return null;
 	}
 	
-	public static Result createResultFlight(JSONObject flight){		
+	public static Result createResultFlight(JSONObject flight){
+		//
 	} 	
 	
 }
