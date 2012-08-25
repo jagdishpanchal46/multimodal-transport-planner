@@ -7,21 +7,17 @@ import java.net.URL;
 
 import org.json.JSONObject;
 
-public class FlightBetweenStations {
+public class FlightsBetweenStations {
 	public static void main(String args[]){
-		String stationId1 = "DEL";
-		String stationId2 = "PAR";
-		
-		//System.setProperty("http.proxyHost", "vsnlproxy.iitk.ac.in");
-		//System.setProperty("http.proxyPort", "3128");		
-
-		//String url = "http://indiarailinfo.com/search/"+stationIdIRI1+"/0/"+stationIdIRI2;
-		
+		System.out.println(flightsBetweenStations("DEL", "BLR", "20120827", "20120828"));
+	}		
+	
+	public static JSONObject flightsBetweenStations(String _airport1, String _airport2, String _startDate, String _endDate){
 		String urlString = "http://www.cleartrip.com/flights/calendar/calendarstub.json?";
-		urlString += "from="+stationId1 ;
-		urlString += "&to="+stationId2 ;
-		urlString += "&start_date="+20120801;
-		urlString += "&end_date="+20120831;
+		urlString += "from="+_airport1;
+		urlString += "&to="+_airport2;
+		urlString += "&start_date="+_startDate;
+		urlString += "&end_date="+_endDate;
 		
 		System.out.println(urlString);
 		//Document doc;		
@@ -34,13 +30,16 @@ public class FlightBetweenStations {
 				//System.out.println(doc);
 				JSONObject jsonObject = new JSONObject(doc);
 				System.out.println(jsonObject.toString());
+				return jsonObject;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				return null;
 			}			
 		} catch (MalformedURLException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
-	}		
+			return null;
+		}		
+	}
 }
