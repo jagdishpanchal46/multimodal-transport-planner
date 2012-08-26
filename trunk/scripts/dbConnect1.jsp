@@ -21,6 +21,7 @@ Class.forName("com.mysql.jdbc.Driver").newInstance();
 alert("hi1");
 </script>
 <%
+connection = DriverManager.getConnection(connectionURL, username,password);
 %>
 <script type="text/javascript">
 alert("hi2");
