@@ -14,16 +14,18 @@
 	<script src="scripts/jqueryui/ui/jquery.ui.autocomplete.js"></script>
 	<link rel="stylesheet" href="scripts/jqueryui/demos/autocomplete/demos.css">
 
+	<script src="scripts/jqueryui/ui/jquery.ui.datepicker.js"></script>
+
 <script>
 $(document).ready(function(){
   $("input[name='srcName']").keyup(function(event) {
-    if(isAlpha(event.keyCode))
+    if(isAlpha(event.keyCode) || isBackspace(event.keyCode))
     {
       getCitySuggestionsSrc($(this).val());
     }
   });
   $("input[name='destName']").keyup(function(event) {
-    if(isAlpha(event.keyCode))
+    if(isAlpha(event.keyCode) || isBackspace(event.keyCode))
     {
       getCitySuggestionsDest($(this).val());
     }
@@ -34,6 +36,9 @@ $(document).ready(function(){
   });
   $("#destName").autocomplete({
 	  source: arr
+  });
+  $(function() {
+	  $( ".datepicker" ).datepicker();
   });
 });
 function createRequestObject() {
@@ -78,28 +83,81 @@ function makeGetRequestDest(wordId) {
 function populateSrc(json_parsed)
 {
   var cities=new Array();
-  for (var u = 0; u < json_parsed.length; u++){
+  var CITY_NAME;
+  var u=0;
+  for (u = 0; u < json_parsed[0].length; u++){
 //     var IATA = json_parsed[u].IATA;
 //     var ICAO = json_parsed[u].ICAO;
 //     var AIRPORT_NAME = json_parsed[u].AIRPORT_NAME;
-    var CITY_NAME = json_parsed[u].CITY_NAME;
+//     if(json_parsed.hasOwnProperty("CITY_NAME"))
+//     {
+      CITY_NAME = json_parsed[0][u].CITY_NAME;
+//     }
+//     else if(json_parsed.hasOwnProperty("name"))
+//     {
+//       CITY_NAME = json_parsed[u].name;
+//     }
 //     var LATITUDE = json_parsed[u].LATITUDE;
 //     var LONGITUDE = json_parsed[u].LONGITUDE;
     cities[u] = CITY_NAME;
   }
+  for (u=0; u < json_parsed[1].length; u++){
+//     var IATA = json_parsed[u].IATA;
+//     var ICAO = json_parsed[u].ICAO;
+//     var AIRPORT_NAME = json_parsed[u].AIRPORT_NAME;
+//     if(json_parsed.hasOwnProperty("CITY_NAME"))
+//     {
+      CITY_NAME = json_parsed[1][u].name;
+// //       alert(CITY_NAME);
+//     }
+//     else if(json_parsed.hasOwnProperty("name"))
+//     {
+//       CITY_NAME = json_parsed[u].name;
+//     }
+//     var LATITUDE = json_parsed[u].LATITUDE;
+//     var LONGITUDE = json_parsed[u].LONGITUDE;
+    cities[u+json_parsed[0].length] = CITY_NAME;
+  }
+//   alert(cities);
   $("#srcName").autocomplete( "option", "source", cities);
 }
 function populateDest(json_parsed)
 {
   var cities=new Array();
-  for (var u = 0; u < json_parsed.length; u++){
+  var CITY_NAME;
+  var u=0;
+  for (u = 0; u < json_parsed[0].length; u++){
 //     var IATA = json_parsed[u].IATA;
 //     var ICAO = json_parsed[u].ICAO;
 //     var AIRPORT_NAME = json_parsed[u].AIRPORT_NAME;
-    var CITY_NAME = json_parsed[u].CITY_NAME;
+//     if(json_parsed.hasOwnProperty("CITY_NAME"))
+//     {
+      CITY_NAME = json_parsed[0][u].CITY_NAME;
+//     }
+//     else if(json_parsed.hasOwnProperty("name"))
+//     {
+//       CITY_NAME = json_parsed[u].name;
+//     }
 //     var LATITUDE = json_parsed[u].LATITUDE;
 //     var LONGITUDE = json_parsed[u].LONGITUDE;
     cities[u] = CITY_NAME;
+  }
+  for (u=0; u < json_parsed[1].length; u++){
+//     var IATA = json_parsed[u].IATA;
+//     var ICAO = json_parsed[u].ICAO;
+//     var AIRPORT_NAME = json_parsed[u].AIRPORT_NAME;
+//     if(json_parsed.hasOwnProperty("CITY_NAME"))
+//     {
+      CITY_NAME = json_parsed[1][u].name;
+// //       alert(CITY_NAME);
+//     }
+//     else if(json_parsed.hasOwnProperty("name"))
+//     {
+//       CITY_NAME = json_parsed[u].name;
+//     }
+//     var LATITUDE = json_parsed[u].LATITUDE;
+//     var LONGITUDE = json_parsed[u].LONGITUDE;
+    cities[u+json_parsed[0].length] = CITY_NAME;
   }
 //   alert(cities);
   $("#destName").autocomplete( "option", "source", cities);
@@ -147,6 +205,13 @@ function getCitySuggestionsDest(str)
 {
   makeGetRequestDest(str);
 }
+function displayResults()
+{
+  var srcName = $("#srcName").val();
+  var destName = $("#destName").val();
+  var date = $.datepicker.parseDate('yymmdd',$(".datepicker").val());
+  alert($(".datepicker").val());
+}
 </script>
 <link rel="stylesheet" type="text/css" href="css.css" />
 </head>
@@ -183,15 +248,22 @@ function getCitySuggestionsDest(str)
 			<div id="heading-cnt">
 				
 				<!-- Sub nav -->
-<div class="inputForm">
-  <form name="input" id="inputForm">
-    Source<input type="text" class="city" name="srcName" id="srcName"></input><br />
-    <input type="hidden" name="srcID" id="srcID"></input>
-    Destination<input type="text" class="city" name="destName" id="destName"></input><br />
+<div class="inputForm" id="side-nav">
+  <form method="POST" name="input" id="inputForm">
+    <table name="mainForm">
+    <tr>
+      <td><label>Source</label></td><td><input type="text" class="city" name="srcName" id="srcName"></input></td>
+      <input type="hidden" name="srcID" id="srcID"></input>
+    <td><label>Destination</label></td><td><input type="text" class="city" name="destName" id="destName"></input></td>
     <input type="hidden" name="destID" id="destID"></input>
-    Start Date<input type="text" class="datepicker" name="depDateStart" id="depDateStart">
-    End Date<input type="text" class="datepicker" name="depDateEnd" id="depDateEnd"></input><br />
-    <input type="button" id="inputFormSubmit" value="GO" onclick="displayResults()"></input><br />
+    </tr>
+    <tr>
+    <td>
+      <td><label>Start Date</label></td><td><input type="text" class="datepicker" name="depDateStart" id="depDateStart">
+    </td>
+     <td><button id="inputFormSubmit" value="GO" onclick="displayResults()">Go</button></td>
+    </tr>
+  </table>
   </form>
 </div>
 <!-- End Form -->
