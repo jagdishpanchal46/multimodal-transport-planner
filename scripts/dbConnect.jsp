@@ -21,15 +21,6 @@ Class.forName("com.mysql.jdbc.Driver").newInstance();
 /* Create a connection by using getConnection() method that takes parameters of string type connection url, user name and password to connect to database. */ 
 connection = DriverManager.getConnection(connectionURL, username,password);
 // check weather connection is established or not by isClosed() method 
-if(!connection.isClosed())
-{ 
-out.println("Success");
-connection.close();
-}
-else
-{
-  out.println("Closed");
-}
 }
 catch(SQLException ex){
 out.println(ex.getSQLState());
