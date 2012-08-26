@@ -1,34 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-
-  div { color:red; }
-  </style>
-<script type="text/javascript" src="scripts/jquery.js"></script>
-</head>
-<body>
-  <select name="sweets" multiple="multiple">
-    <option>Chocolate</option>
-    <option selected="selected">Candy</option>
-
-    <option>Taffy</option>
-    <option selected="selected">Caramel</option>
-    <option>Fudge</option>
-    <option>Cookie</option>
-
-  </select>
-  <div></div>
-<script>
-    $("select").change(function () {
-          var str = "";
-          $("select option:selected").each(function () {
-                str += $(this).text() + " ";
-              });
-          $("div").text(str);
-        })
-        .change();
-</script>
-
-</body>
-</html>
+<%@page contentType="text/html; charset=UTF-8"%>
+  <%@page import="org.json.simple.JSONObject"%>
+  <%
+    JSONObject obj=new JSONObject();
+    obj.put("name","foo");
+    obj.put("num",new Integer(100));
+    obj.put("balance",new Double(1000.21));
+    obj.put("is_vip",new Boolean(true));
+    obj.put("nickname",null);
+    out.print(obj);
+    out.flush();
+  %>
