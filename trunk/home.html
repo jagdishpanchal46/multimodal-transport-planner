@@ -6,7 +6,36 @@
 	<link rel="stylesheet" href="css/style.css" type="text/css" media="all" />
 	<script type="text/javascript" src="scripts/crawler.js"></script>
 	<script type="text/javascript" src="scripts/jquery.js"></script>
+
+	<link rel="stylesheet" href="scripts/jqueryui/themes/base/jquery.ui.all.css">
+	<script src="scripts/jqueryui/ui/jquery.ui.core.js"></script>
+	<script src="scripts/jqueryui/ui/jquery.ui.widget.js"></script>
+	<script src="scripts/jqueryui/ui/jquery.ui.position.js"></script>
+	<script src="scripts/jqueryui/ui/jquery.ui.autocomplete.js"></script>
+	<link rel="stylesheet" href="scripts/jqueryui/demos/autocomplete/demos.css">
+
 <script>
+$(document).ready(function(){
+  $("input[name='srcName']").keyup(function(event) {
+    if(isAlpha(event.keyCode) || isBackspace(event.keyCode))
+    {
+      getCitySuggestionsSrc($(this).val());
+    }
+  });
+  $("input[name='destName']").keyup(function(event) {
+    if(isAlpha(event.keyCode) || isBackspace(event.keyCode))
+    {
+      getCitySuggestionsDest($(this).val());
+    }
+  });
+  var arr = new Array();
+  $("#srcName").autocomplete({
+	  source: arr
+  });
+  $("#destName").autocomplete({
+	  source: arr
+  });
+});
 function createRequestObject() {
     var tmpXmlHttpObject;
     
@@ -24,25 +53,75 @@ function createRequestObject() {
 //call the above function to create the XMLHttpRequest object
 var http = createRequestObject();
 
-function makeGetRequest(wordId) {
+function makeGetRequestSrc(wordId) {
     //make a connection to the server ... specifying that you intend to make a GET request 
     //to the server. Specifiy the page name and the URL parameters to send
     http.open('get', 'scripts/getCity.jsp?str=' + wordId);
 	
     //assign a handler for the response
-    http.onreadystatechange = processResponse;
+    http.onreadystatechange = processResponseSrc;
 	
     //actually send the request to the server
     http.send(null);
 }
-
-function processResponse() {
+function makeGetRequestDest(wordId) {
+    //make a connection to the server ... specifying that you intend to make a GET request 
+    //to the server. Specifiy the page name and the URL parameters to send
+    http.open('get', 'scripts/getCity.jsp?str=' + wordId);
+	
+    //assign a handler for the response
+    http.onreadystatechange = processResponseDest;
+	
+    //actually send the request to the server
+    http.send(null);
+}
+function populateSrc(json_parsed)
+{
+  var cities=new Array();
+  for (var u = 0; u < json_parsed.length; u++){
+//     var IATA = json_parsed[u].IATA;
+//     var ICAO = json_parsed[u].ICAO;
+//     var AIRPORT_NAME = json_parsed[u].AIRPORT_NAME;
+    var CITY_NAME = json_parsed[u].CITY_NAME;
+//     var LATITUDE = json_parsed[u].LATITUDE;
+//     var LONGITUDE = json_parsed[u].LONGITUDE;
+    cities[u] = CITY_NAME;
+  }
+  $("#srcName").autocomplete( "option", "source", cities);
+}
+function populateDest(json_parsed)
+{
+  var cities=new Array();
+  for (var u = 0; u < json_parsed.length; u++){
+//     var IATA = json_parsed[u].IATA;
+//     var ICAO = json_parsed[u].ICAO;
+//     var AIRPORT_NAME = json_parsed[u].AIRPORT_NAME;
+    var CITY_NAME = json_parsed[u].CITY_NAME;
+//     var LATITUDE = json_parsed[u].LATITUDE;
+//     var LONGITUDE = json_parsed[u].LONGITUDE;
+    cities[u] = CITY_NAME;
+  }
+//   alert(cities);
+  $("#destName").autocomplete( "option", "source", cities);
+}
+function processResponseSrc() {
     //check if the response has been received from the server
     if(http.readyState == 4){
 	
         //read and assign the response from the server
         var response = http.responseText;
-        alert(response);
+        var json_parsed = jQuery.parseJSON(response);
+	populateSrc(json_parsed);
+    }
+}
+function processResponseDest() {
+    //check if the response has been received from the server
+    if(http.readyState == 4){
+	
+        //read and assign the response from the server
+        var response = http.responseText;
+        var json_parsed = jQuery.parseJSON(response);
+	populateDest(json_parsed);
     }
 }
 function isAlpha(ch)
@@ -56,18 +135,18 @@ function isAlpha(ch)
     return false;
   }
 }
-function getCitySuggestions(str)
+function isBackspace(ch)
 {
-  makeGetRequest(str);
+  return ch==8;
 }
-$(document).ready(function(){
-  $("input[class='city']").keyup(function(event) {
-    if(isAlpha(event.keyCode))
-    {
-      getCitySuggestions($(this).val());
-    }
-  });
-});
+function getCitySuggestionsSrc(str)
+{
+  makeGetRequestSrc(str);
+}
+function getCitySuggestionsDest(str)
+{
+  makeGetRequestDest(str);
+}
 </script>
 <link rel="stylesheet" type="text/css" href="css.css" />
 </head>
