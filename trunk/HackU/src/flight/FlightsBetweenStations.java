@@ -19,7 +19,7 @@ public class FlightsBetweenStations {
 		urlString += "&start_date="+_startDate;
 		urlString += "&end_date="+_endDate;
 		
-		System.out.println(urlString);
+		//System.err.println(urlString);
 		//Document doc;		
 		URL url;
 		try {
@@ -29,7 +29,7 @@ public class FlightsBetweenStations {
 				doc = Utils.readPage(url);
 				//System.out.println(doc);
 				JSONObject jsonObject = new JSONObject(doc);
-				System.out.println(jsonObject.toString());
+				//System.out.println(jsonObject.toString());
 				return jsonObject;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
