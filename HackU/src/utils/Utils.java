@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.http.HttpResponse;
@@ -45,13 +47,131 @@ public class Utils {
         }
     }
 	
-	public static JSONObject concatanateRoutes(JSONObject json1, JSONObject json2, boolean bool){
-		//TODO complete it		
+	public static String getHalt(String at, String dt){
+		String retval="";
+		int atime = 60*Integer.parseInt(at.split(":")[0]) + Integer.parseInt(at.split(":")[1]);
+		int dtime = 60*Integer.parseInt(dt.split(":")[0]) + Integer.parseInt(dt.split(":")[1]);
 		
-		return json1;
+		int diff = dtime - atime;
+		retval += Integer.toString(diff/60)+":"+Integer.toString(diff%60);
+		
+		return retval;
 	}
 	
-	public static JSONObject createResultTrain(JSONObject obj) throws JSONException{
+	public static List<JSONObject> concatanateRoutes(JSONObject json1, JSONObject json2, boolean bool, String date, String from, String via, String to) throws JSONException{
+		//TODO complete it		
+		List<JSONObject> retval = new ArrayList<JSONObject>();
+		
+		if(bool){
+			// means first flight, then train
+			try{
+				JSONObject allDates = json1.getJSONObject("calendar_json");
+				//System.err.println(allDates.toString());
+				JSONArray flights = allDates.getJSONArray(date);
+				//System.err.println(flights.toString());
+				
+				allDates = json2.getJSONObject("calendar_json");
+				JSONArray trains = allDates.getJSONArray(date);
+				//System.err.println(trains.toString());				
+				
+				for(int i=0; i<flights.length(); i++){
+					for(int j=0; j<trains.length(); j++){
+						JSONObject flightTemp = flights.getJSONObject(i);						
+						String at = flightTemp.getString("at");
+						if(at != "."){
+							JSONObject trainTemp = trains.getJSONObject(j); 
+							String dt = trainTemp.getString("dt");
+							if(at.compareTo(dt)<0){
+								JSONObject temp = new JSONObject();
+								//TODO build object
+								temp.put("type", "2");
+								
+								temp.put("from", from);
+								temp.put("via", via);
+								temp.put("to", to);
+								
+								temp.put("dt1", flightTemp.getString("dt"));									
+								temp.put("at1", flightTemp.getString("at"));
+								temp.put("ad1", flightTemp.getString("ad"));
+								temp.put("dd1", date);
+								temp.put("pr1", flightTemp.getString("pr"));
+								
+								temp.put("dt2", trainTemp.getString("dt"));									
+								temp.put("at2", trainTemp.getString("at"));
+								temp.put("ad2", trainTemp.getString("ad"));
+								temp.put("dd2", trainTemp.getString("dd"));
+								temp.put("pr2", trainTemp.getString("pr"));
+								
+								temp.put("pr", Double.toString( Double.parseDouble(flightTemp.getString("pr"))+Double.parseDouble(trainTemp.getString("pr")) ) );
+								
+								temp.put("ht", getHalt(at,dt));
+								
+								retval.add(temp);
+							}
+						}						
+					}
+				}
+			} catch(JSONException e){		
+				e.printStackTrace();
+			}
+		} else{
+			try{
+				JSONObject allDates = json1.getJSONObject("calendar_json");
+				//System.err.println(allDates.toString());
+				JSONArray trains = allDates.getJSONArray(date);
+				//System.err.println(trains.toString());
+				
+				allDates = json2.getJSONObject("calendar_json");
+				JSONArray flights = allDates.getJSONArray(date);
+				//System.err.println(flights.toString());						
+				
+				for(int i=0; i<trains.length(); i++){
+					for(int j=0; j<flights.length(); j++){
+						JSONObject trainTemp = trains.getJSONObject(i); 
+						String at = trainTemp.getString("at");
+						if(at != "."){
+							JSONObject flightTemp = flights.getJSONObject(j); 
+							String dt = flightTemp.getString("dt");
+							if(at.compareTo(dt)<0){
+								JSONObject temp = new JSONObject();
+								//TODO build object
+
+								temp.put("type", "3");
+								
+								temp.put("from", from);
+								temp.put("via", via);
+								temp.put("to", to);
+								
+								temp.put("dt1", trainTemp.getString("dt"));									
+								temp.put("at1", trainTemp.getString("at"));
+								temp.put("ad1", trainTemp.getString("ad"));
+								temp.put("dd1", trainTemp.getString("dd"));
+								temp.put("pr1", trainTemp.getString("pr"));
+								
+								temp.put("dt2", flightTemp.getString("dt"));									
+								temp.put("at2", flightTemp.getString("at"));
+								temp.put("ad2", flightTemp.getString("ad"));
+								temp.put("dd2", flightTemp.getString("dd"));
+								temp.put("pr2", flightTemp.getString("pr"));
+								
+								temp.put("pr", Double.toString( Double.parseDouble(flightTemp.getString("pr"))+Double.parseDouble(trainTemp.getString("pr")) ) );
+								
+								temp.put("ht", getHalt(at,dt));
+								
+								retval.add(temp);
+							}
+						}
+					}
+				}				
+			} catch(JSONException e){
+				e.printStackTrace();
+			}
+		}
+		
+		return retval;
+	}
+	
+	public static JSONObject createResultTrain(JSONObject obj, String _date) throws JSONException{
 		//TODO fix it
 		
 		String to[], from_stations[], to_code[], fare[], from_code[],from[], stops[];
@@ -120,23 +240,25 @@ public class Utils {
 	    	month = tokenizer.nextToken();
 	    	year = tokenizer.nextToken(); 
 	    	ftDate = year+month+date;
-	    	JSONObject entry = new JSONObject();
-	    	entry.put("dt", oneres.getString("depart_time"));
+	    	JSONObject entry = new JSONObject();	    	
 	    	
 	    	String[] fairs = (oneres.getString("valid_fare")).split(",");
-	    	entry.put("pr", fairs[0]); 
 	    	entry.put("aln", oneres.getString("number"));
-	    	entry.put("al", oneres.getString("name")); 
-	    	entry.put("al", oneres.getString("train_id"));
-	    	entry.put("ad", oneres.getString("depart_date"));
-	    	entry.put("at",".");
+	    	entry.put("dt", oneres.getString("depart_time"));
+	    	entry.put("at", oneres.getString("arrive_time"));
+	    	entry.put("ad", oneres.getString("arrive_date"));
+	    	entry.put("dd", oneres.getString("depart_date"));
+	    	entry.put("pr", fairs[0]); 	    	
+	    	//entry.put("al", oneres.getString("name")); 
+	    	//entry.put("al", oneres.getString("train_id"));	    		    
 	    	//entry.put("at", oneres.getString("board_offset_times"));
-	    	String afdarray[] = {" ", " "};
-	    	entry.put("afd", afdarray); 
-	    	entry.put("via", afdarray);
+	    	//String afdarray[] = {" ", " "};
+	    	//entry.put("afd", afdarray); 
+	    	//entry.put("via", afdarray);
+	    	//entry.put("to", oneres.getString("to"));
 	    	arr.put(entry);
     	}	
-	    finalresult.put(ftDate, arr);
+	    finalresult.put(_date, arr);
 	    newResult.put("calendar_json", finalresult);
 	
 	    return newResult;
