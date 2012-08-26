@@ -8,6 +8,7 @@
 	<script type="text/javascript" src="scripts/jquery.js"></script>
 
 	<link rel="stylesheet" href="scripts/jqueryui/themes/base/jquery.ui.all.css">
+	<link rel="stylesheet" type="text/css" href="css.css" />
 	<script src="scripts/jqueryui/ui/jquery.ui.core.js"></script>
 	<script src="scripts/jqueryui/ui/jquery.ui.widget.js"></script>
 	<script src="scripts/jqueryui/ui/jquery.ui.position.js"></script>
@@ -15,205 +16,9 @@
 	<link rel="stylesheet" href="scripts/jqueryui/demos/autocomplete/demos.css">
 
 	<script src="scripts/jqueryui/ui/jquery.ui.datepicker.js"></script>
-
-<script>
-$(document).ready(function(){
-  $("input[name='srcName']").keyup(function(event) {
-    if(isAlpha(event.keyCode) || isBackspace(event.keyCode))
-    {
-      getCitySuggestionsSrc($(this).val());
-    }
-  });
-  $("input[name='destName']").keyup(function(event) {
-    if(isAlpha(event.keyCode) || isBackspace(event.keyCode))
-    {
-      getCitySuggestionsDest($(this).val());
-    }
-  });
-  var arr = new Array();
-  $("#srcName").autocomplete({
-	  source: arr
-  });
-  $("#destName").autocomplete({
-	  source: arr
-  });
-  $(function() {
-	  $( ".datepicker" ).datepicker();
-  });
-});
-function createRequestObject() {
-    var tmpXmlHttpObject;
-    
-    if (window.XMLHttpRequest) { 
-        // Mozilla, Safari would use this method ...
-        tmpXmlHttpObject = new XMLHttpRequest();
-	
-    } else if (window.ActiveXObject) { 
-        // IE would use this method ...
-        tmpXmlHttpObject = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-    
-    return tmpXmlHttpObject;
-}
-//call the above function to create the XMLHttpRequest object
-var http = createRequestObject();
-
-function makeGetRequestSrc(wordId) {
-    //make a connection to the server ... specifying that you intend to make a GET request 
-    //to the server. Specifiy the page name and the URL parameters to send
-    http.open('get', 'scripts/getCity.jsp?str=' + wordId);
-	
-    //assign a handler for the response
-    http.onreadystatechange = processResponseSrc;
-	
-    //actually send the request to the server
-    http.send(null);
-}
-function makeGetRequestDest(wordId) {
-    //make a connection to the server ... specifying that you intend to make a GET request 
-    //to the server. Specifiy the page name and the URL parameters to send
-    http.open('get', 'scripts/getCity.jsp?str=' + wordId);
-	
-    //assign a handler for the response
-    http.onreadystatechange = processResponseDest;
-	
-    //actually send the request to the server
-    http.send(null);
-}
-function populateSrc(json_parsed)
-{
-  var cities=new Array();
-  var CITY_NAME;
-  var u=0;
-  for (u = 0; u < json_parsed[0].length; u++){
-//     var IATA = json_parsed[u].IATA;
-//     var ICAO = json_parsed[u].ICAO;
-//     var AIRPORT_NAME = json_parsed[u].AIRPORT_NAME;
-//     if(json_parsed.hasOwnProperty("CITY_NAME"))
-//     {
-      CITY_NAME = json_parsed[0][u].CITY_NAME;
-//     }
-//     else if(json_parsed.hasOwnProperty("name"))
-//     {
-//       CITY_NAME = json_parsed[u].name;
-//     }
-//     var LATITUDE = json_parsed[u].LATITUDE;
-//     var LONGITUDE = json_parsed[u].LONGITUDE;
-    cities[u] = CITY_NAME;
-  }
-  for (u=0; u < json_parsed[1].length; u++){
-//     var IATA = json_parsed[u].IATA;
-//     var ICAO = json_parsed[u].ICAO;
-//     var AIRPORT_NAME = json_parsed[u].AIRPORT_NAME;
-//     if(json_parsed.hasOwnProperty("CITY_NAME"))
-//     {
-      CITY_NAME = json_parsed[1][u].name;
-// //       alert(CITY_NAME);
-//     }
-//     else if(json_parsed.hasOwnProperty("name"))
-//     {
-//       CITY_NAME = json_parsed[u].name;
-//     }
-//     var LATITUDE = json_parsed[u].LATITUDE;
-//     var LONGITUDE = json_parsed[u].LONGITUDE;
-    cities[u+json_parsed[0].length] = CITY_NAME;
-  }
-//   alert(cities);
-  $("#srcName").autocomplete( "option", "source", cities);
-}
-function populateDest(json_parsed)
-{
-  var cities=new Array();
-  var CITY_NAME;
-  var u=0;
-  for (u = 0; u < json_parsed[0].length; u++){
-//     var IATA = json_parsed[u].IATA;
-//     var ICAO = json_parsed[u].ICAO;
-//     var AIRPORT_NAME = json_parsed[u].AIRPORT_NAME;
-//     if(json_parsed.hasOwnProperty("CITY_NAME"))
-//     {
-      CITY_NAME = json_parsed[0][u].CITY_NAME;
-//     }
-//     else if(json_parsed.hasOwnProperty("name"))
-//     {
-//       CITY_NAME = json_parsed[u].name;
-//     }
-//     var LATITUDE = json_parsed[u].LATITUDE;
-//     var LONGITUDE = json_parsed[u].LONGITUDE;
-    cities[u] = CITY_NAME;
-  }
-  for (u=0; u < json_parsed[1].length; u++){
-//     var IATA = json_parsed[u].IATA;
-//     var ICAO = json_parsed[u].ICAO;
-//     var AIRPORT_NAME = json_parsed[u].AIRPORT_NAME;
-//     if(json_parsed.hasOwnProperty("CITY_NAME"))
-//     {
-      CITY_NAME = json_parsed[1][u].name;
-// //       alert(CITY_NAME);
-//     }
-//     else if(json_parsed.hasOwnProperty("name"))
-//     {
-//       CITY_NAME = json_parsed[u].name;
-//     }
-//     var LATITUDE = json_parsed[u].LATITUDE;
-//     var LONGITUDE = json_parsed[u].LONGITUDE;
-    cities[u+json_parsed[0].length] = CITY_NAME;
-  }
-//   alert(cities);
-  $("#destName").autocomplete( "option", "source", cities);
-}
-function processResponseSrc() {
-    //check if the response has been received from the server
-    if(http.readyState == 4){
-	
-        //read and assign the response from the server
-        var response = http.responseText;
-        var json_parsed = jQuery.parseJSON(response);
-	populateSrc(json_parsed);
-    }
-}
-function processResponseDest() {
-    //check if the response has been received from the server
-    if(http.readyState == 4){
-	
-        //read and assign the response from the server
-        var response = http.responseText;
-        var json_parsed = jQuery.parseJSON(response);
-	populateDest(json_parsed);
-    }
-}
-function isAlpha(ch)
-{
-  if((ch>=65 && ch<=90) || (ch>=97 && ch<=122))
-  {
-    return true;
-  }
-  else
-  {
-    return false;
-  }
-}
-function isBackspace(ch)
-{
-  return ch==8;
-}
-function getCitySuggestionsSrc(str)
-{
-  makeGetRequestSrc(str);
-}
-function getCitySuggestionsDest(str)
-{
-  makeGetRequestDest(str);
-}
-function displayResults()
-{
-  var srcName = $("#srcName").val();
-  var destName = $("#destName").val();
-  var date = $.datepicker.parseDate('yymmdd',$(".datepicker").val());
-  alert($(".datepicker").val());
-}
-</script>
-<link rel="stylesheet" type="text/css" href="css.css" />
+	<script src="scripts/onload.js"></script>
+	<script src="scripts/autocomplete.js"></script>
+	<script src="scripts/getResults.js"></script>
 </head>
 <body>
 	<!-- Header -->
@@ -253,9 +58,7 @@ function displayResults()
     <table name="mainForm">
     <tr>
       <td><label>Source</label></td><td><input type="text" class="city" name="srcName" id="srcName"></input></td>
-      <input type="hidden" name="srcID" id="srcID"></input>
     <td><label>Destination</label></td><td><input type="text" class="city" name="destName" id="destName"></input></td>
-    <input type="hidden" name="destID" id="destID"></input>
     </tr>
     <tr>
     <td>
@@ -265,6 +68,9 @@ function displayResults()
     </tr>
   </table>
   </form>
+</div>
+<div class="results" id="results" name="results">
+<>
 </div>
 <!-- End Form -->
 			
