@@ -24,10 +24,13 @@ public class FlightsBetweenStationsRunnable implements Runnable {
 	String endDate;
 	List<JSONObject> results; 
 	boolean bool;
+	String from;
+	String via;
+	String to;
 	
 	//Constructors
 	public FlightsBetweenStationsRunnable(String _airport1, String _airport2, String _station1, 
-			String _station2, String _startDate, String _endDate, List<JSONObject> _results, boolean _bool){
+			String _station2, String _startDate, String _endDate, List<JSONObject> _results, boolean _bool, String _from, String _via, String _to){
 		this.airport1 = _airport1;
 		this.airport2 = _airport2;
 		this.station1 = _station1;
@@ -36,6 +39,9 @@ public class FlightsBetweenStationsRunnable implements Runnable {
 		this.endDate = _endDate;
 		this.results = _results;
 		this.bool = _bool;
+		this.from = _from;
+		this.via = _via;
+		this.to = _to;
 	}
 	
 	@Override
@@ -44,7 +50,11 @@ public class FlightsBetweenStationsRunnable implements Runnable {
 			JSONObject jsonFlight = FlightsBetweenStations.flightsBetweenStations(airport1, airport2, startDate, endDate);
 			JSONObject jsonTrain = TrainsBetweenStations.trainsBetweenStations(station1, station2, "SL", startDate);
 			try {
-				this.results.add( Utils.concatanateRoutes(jsonFlight, Utils.createResultTrain(jsonTrain), true) );
+				List<JSONObject> retvals = Utils.concatanateRoutes(jsonFlight, Utils.createResultTrain(jsonTrain, startDate), 
+						true, startDate, from+"("+airport1+")", via+"("+airport2+")", to+"("+station2+")");
+				for(int i=0; i<retvals.size(); i++){					
+					this.results.add( retvals.get(i) );
+				}				
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -53,40 +63,14 @@ public class FlightsBetweenStationsRunnable implements Runnable {
 			JSONObject jsonTrain = TrainsBetweenStations.trainsBetweenStations(airport1, airport2, "SL", startDate);
 			JSONObject jsonFlight = FlightsBetweenStations.flightsBetweenStations(station1, station2, startDate, endDate);
 			try {
-				this.results.add( Utils.concatanateRoutes(jsonFlight, Utils.createResultTrain(jsonTrain), false) );
+				List<JSONObject> retvals = Utils.concatanateRoutes( Utils.createResultTrain(jsonTrain, startDate), jsonFlight, false, startDate, from+"("+airport1+")", via+"("+airport2+")", to+"("+station2+")"); 
+				for(int i=0; i<retvals.size(); i++){					
+					this.results.add( retvals.get(i) );
+				}				
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-		
-		/**
-		String urlString = "http://www.cleartrip.com/flights/calendar/calendarstub.json?";
-		urlString += "from="+airport1;
-		urlString += "&to="+airport2;
-		urlString += "&start_date="+startDate;
-		urlString += "&end_date="+endDate;
-		
-		//System.out.println(urlString);
-		JSONObject jsonFlight;
-		
-		URL url;
-		try {
-			url = new URL(urlString);
-			String doc;
-			try {
-				doc = Utils.readPage(url);
-				//System.out.println(doc);
-				jsonFligh = new JSONObject(doc);				
-				//System.out.println(json.toString());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}			
-		} catch (MalformedURLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}	
-		**/			
+		}				
 	}
 }

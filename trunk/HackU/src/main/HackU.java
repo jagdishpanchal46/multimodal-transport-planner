@@ -31,7 +31,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Process {
+public class HackU {
 	// Global variables
 	
 	public static String allAirportsFile = "data/AirportDatabase.dat";
@@ -46,12 +46,42 @@ public class Process {
 	//public static List<Station> majorStations = new ArrayList<Station>();
 	
 	public static void init(){
-		fillListsAirport(allAirportsFile, allAirports);
-		fillListsAirport(majorAirportsFile, majorAirports);
+		//fillListsAirport(allAirportsFile, allAirports);
+		fillListsAirport("AIRPORTS", allAirports);
+		//fillListsAirport(majorAirportsFile, majorAirports);
+		fillListsAirport("MAJOR_AIRPORTS", majorAirports);
 		fillListsStation(allStationsFile, allStations);
 		//fillListsStation(majorStationsFile, majorStations);
 	}
 
+	public static void fillListsAirport(String TABLE, List<Airport> arrayList){
+		//System.out.println("MySQL Connect Example.");
+		Connection conn = null;
+		String url = "jdbc:mysql://172.27.22.147:3306/DB";
+		String dbName = "DB";		  
+		String userName = "root"; 
+		String password = "root";
+		try {
+			Class.forName("com.mysql.jdbc.Driver");			  
+			//conn = DriverManager.getConnection(url+dbName,userName,password);
+			conn = DriverManager.getConnection(url, userName, password);
+			//System.out.println("Connected to the database");
+			
+			Statement statement = conn.createStatement();
+			String sql = "SELECT * FROM "+TABLE;
+			ResultSet rs = statement.executeQuery(sql); 
+			while(rs.next()){
+				arrayList.add(new Airport(rs));
+			}
+			statement.close();
+			conn.close();
+			//System.out.println("Disconnected from database");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}	
+	}
+	
+	/**
 	public static void fillListsAirport(String file, List<Airport> arrayList){
 		//this code fills up lists for airports, railways etc
 		FileInputStream fstreamIn;
@@ -81,6 +111,7 @@ public class Process {
 			e.printStackTrace();
 		}			
 	}
+	**/
 
 	public static void fillListsStation(String file, List<Station> arrayList){
 		//System.out.println("MySQL Connect Example.");
@@ -162,7 +193,8 @@ public class Process {
 		System.out.println(process("Vadodara", "Jhansi", "20120827", "20120829"));
 	}
 	
-	public static String process(String src, String dest, String time1, String time2) throws JSONException{
+	public static List<JSONObject> process(String src, String dest, String time1, String time2) throws JSONException{
+	//public static String process(String src, String dest, String time1, String time2) throws JSONException{
 		init();
 		//TODO take these inputs from a json file
 		//String srcName = "Vadodara";
@@ -191,15 +223,50 @@ public class Process {
 		//System.err.println("Results1 : "+results.size());
 		
 		if(srcAirport != null && destAirport != null){
-			//Result result = createResultFlight();			
-			results.add(FlightsBetweenStations.flightsBetweenStations(srcAirport.code1, destAirport.code1, startDate, endDate));
+			//Result result = createResultFlight();
+			JSONObject ret = FlightsBetweenStations.flightsBetweenStations(srcAirport.code1, destAirport.code1, startDate, endDate);
+			ret = ret.getJSONObject("calendar_json");
+			
+			JSONArray retArray = ret.getJSONArray(startDate);
+			for(int i=0; i<retArray.length(); i++){
+				JSONObject retval = retArray.getJSONObject(i);
+				JSONObject temp = new JSONObject();				
+				temp.put("type", "0");
+				temp.put("aln", retval.getString("aln"));
+				temp.put("from", srcName+"("+srcAirport.code1+")");
+				temp.put("to", destName+"("+destAirport.code1+")");
+				temp.put("dt", retval.getString("dt"));			
+				temp.put("at", retval.getString("at"));
+				temp.put("ad", retval.getString("ad"));
+				temp.put("dd", startDate);
+				temp.put("pr", retval.getString("pr"));
+				//System.out.println(temp.toString());
+				results.add(temp);
+			}
 		}
 		
 		//System.err.println("Results2 : "+results.size());
 		
 		if(srcStation != null && destStation != null){
-			JSONObject result = Utils.createResultTrain(TrainsBetweenStations.trainsBetweenStations(srcStation.code, destStation.code, "SL", startDate));
-			results.add(result);
+			JSONObject ret = Utils.createResultTrain(TrainsBetweenStations.trainsBetweenStations(srcStation.code, destStation.code, "SL", startDate),startDate);
+			ret = ret.getJSONObject("calendar_json");			
+			JSONArray retArray = ret.getJSONArray(startDate);
+			
+			for(int i=0; i<retArray.length(); i++){
+				JSONObject retval = retArray.getJSONObject(i);
+				JSONObject temp = new JSONObject();				
+				temp.put("type", "1");
+				temp.put("from", srcName+"("+srcStation.code+")");
+				temp.put("to", destName+"("+destStation.code+")");
+				temp.put("aln", retval.getString("aln"));
+				temp.put("dt", retval.getString("dt"));			
+				temp.put("at", retval.getString("at"));
+				temp.put("ad", retval.getString("ad"));
+				temp.put("dd", startDate);
+				temp.put("pr", retval.getString("pr"));
+				//System.out.println(temp.toString());
+				results.add(temp);
+			}			
 			//System.err.println(result.toString());			
 		}
 		
@@ -246,7 +313,7 @@ public class Process {
 						//crawlerThreadPool.execute(new UserCrawler(frontier,userService,repoService,gistService,writerThreadPool,dbConnection));
 						//JSONObject temp = null;
 						crawlerThreadPool.execute(new FlightsBetweenStationsRunnable(
-									srcAirport.code1, currentAirport.code1, currentStation.code, destStation.code, startDate, endDate, results, true)
+									srcAirport.code1, currentAirport.code1, currentStation.code, destStation.code, startDate, endDate, results, true, srcAirport.city, currentAirport.city, destStation.name)
 								);
 						//results.add(temp);
 						wasRefused = false;
@@ -343,7 +410,7 @@ public class Process {
 						//crawlerThreadPool.execute(new UserCrawler(frontier,userService,repoService,gistService,writerThreadPool,dbConnection));
 						//JSONObject temp = null;
 						crawlerThreadPool.execute(new FlightsBetweenStationsRunnable(
-								srcStation.code, currentStation.code, currentAirport.code1, destAirport.code1, startDate, endDate, results, false)
+								srcStation.code, currentStation.code, currentAirport.code1, destAirport.code1, startDate, endDate, results, false, srcStation.name, currentStation.name, destAirport.city)
 								);
 						//results.add(temp);
 						wasRefused = false;
@@ -408,7 +475,8 @@ public class Process {
 		}
 		if(results.get(i) != null)	retval += results.get(i).toString()+"]";
 		else retval += "]";
-		return retval;
+		//return retval;
+		return results;
 	}
 
 	public static Airport findAirport(String airportName){	
@@ -470,6 +538,15 @@ class Airport{
 		} catch(ArrayIndexOutOfBoundsException e){
 			//System.err.println(recordStr);
 		}
+	}
+	
+	public Airport(ResultSet rs)throws SQLException{
+		this.code1 = rs.getString(1);
+		this.code2 = rs.getString(2);
+		this.name = rs.getString(3);
+		this.city = rs.getString(4);
+		this.lat = Double.parseDouble(rs.getString(5));
+		this.lon = Double.parseDouble(rs.getString(6));
 	}
 	
 	public void tostring(){
