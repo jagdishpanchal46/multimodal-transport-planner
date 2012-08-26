@@ -9,7 +9,7 @@ String dbName = "DB";
 String username = "root";
 String password = "root";
 /* Create string of connection url within specified format with machine name, port number and database name. Here machine name id localhost and database name is usermaster. */ 
-String connectionURL = "jdbc:mysql://172.27.22.147:3306/DB";
+String connectionURL = "jdbc:mysql://"+ip+":3306/DB";
 
 // declare a connection by using Connection interface 
 Connection connection = null; 
