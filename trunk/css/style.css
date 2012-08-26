@@ -43,7 +43,7 @@ h1#logo a {display: block; background: url(images/logo.png) no-repeat 0 0; width
 #navigation ul li {background: url(images/nav-divider.gif) no-repeat right 0; float: left; display: inline; padding-left: 23px; padding-right: 19px;}
 #navigation ul li a {color: #676767; font-family: tahoma, sans-serif; font-size: 13px; text-transform: uppercase; padding-top: 16px; display: block; height: 34px; float: left;}
 
-#heading {height: 120px; background: url(images/heading.png) repeat-x 0 0;}
+#heading {height: 250px; background: url(images/heading.jpg) repeat-x 0 0;}
 #heading .shell {width: 983px; position: relative;}
 #heading-cnt {background: url(images/heading-cnt.png) no-repeat 0 0; width: 1000px; height: 400px;}
 
@@ -56,7 +56,7 @@ float:left;
 }
 #side-nav input{
 float:left;
-font-size:9px;
+font-size:12px;
 padding:2px 1px;
 border:solid 1px #aacfe4;
 width:150px;
@@ -74,6 +74,7 @@ color:#FFFFFF;
 font-size:11px;
 font-weight:bold;
 }
+#results {background: url(images/heading-box.png) ; height: 50px;}
 /* #side-nav ul {list-style-type: none; width: 205px; padding-top: 9px; padding-left: 20px;} */
 /* #side-nav ul li {float: left; display: block; width: 205px; padding-bottom:5px;} */
 /* #side-nav ul li a {width: 195px; height: 18px; display: block; padding-left: 10px; padding-top: 4px; text-transform: uppercase; color: #636363; font-size: 11px; font-weight: bold;position: relative;} */
@@ -96,7 +97,11 @@ font-weight:bold;
 .featured-side-item h4, .featured-side-item h4 a {font-size: 12px; color: #9fea00;padding-top: 4px;}
 .featured-side-item p {color: #c9c9c9; font-size: 10px;}
 
-#main {background: url(images/main-bg.gif) repeat-x 0 0; padding-top: 8px; padding-bottom: 45px;}
+#main {height: 250px; background: url(images/heading-box.png) repeat-x 0 0;}
+#main .shell {width: 983px; position: relative;}
+
+/*#main {background: url(images/main-bg.gif) repeat-x 0 0; padding-top: 8px; padding-bottom: 45px;}
+#main */
 #main h2 {color: #fff; font-size: 16px; text-transform: uppercase; padding-bottom: 2px;}
 #sidebar {padding-top: 14px; width: 197px; padding-right: 10px; float: left;} 
 #sidebar ul {list-style-type: none; padding-bottom: 7px;}
@@ -129,3 +134,26 @@ a.watch-now:hover {text-decoration: none;}
 #footer .shell {background: url(images/news-divider.gif) repeat-x 0 0; padding-top: 10px; margin: 0 auto;}
 #footer a {color: #fff; margin-right: 10px; text-decoration: underline;}
 #footer a:hover {text-decoration: none;}
+
+a.dp-choose-date {
+	float: left;
+	width: 16px;
+	height: 16px;
+	padding: 0;
+	margin: 5px 3px 0;
+	display: block;
+	text-indent: -2000px;
+	overflow: hidden;
+	background: url(calendar.png) no-repeat; 
+}
+a.dp-choose-date.dp-disabled {
+	background-position: 0 -20px;
+	cursor: default;
+}
+/* makes the input field shorter once the date picker code
+ * has run (to allow space for the calendar icon
+ */
+input.dp-applied {
+	width: 140px;
+	float: left;
+}

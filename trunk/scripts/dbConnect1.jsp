@@ -2,7 +2,7 @@
 "http://www.w3.org/TR/html4/loose.dtd"> 
 <%@ page import="java.sql.*" %> 
 <%@ page import="java.io.*" %>
-<%
+<
 String ip = "172.27.22.147";
 String port = "3306";
 String dbName = "DB";

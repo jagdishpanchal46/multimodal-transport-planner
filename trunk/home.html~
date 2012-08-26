@@ -60,7 +60,7 @@
 				    
 				    <label>Destination</label>
 				    <input type="text" class="city" name="destName" id="destName"></input>
-				    <label>Start Date</label></td><br/><input type="text" class="datepicker" name="depDateStart" id="depDateStart">
+				    <label>Start Date</label><input type="text" class="datepicker" name="depDateStart" id="depDateStart">
 				    
 				    <button id="inputFormSubmit" value="GO" onclick="displayResults()">Go</button>
 				    
@@ -69,6 +69,9 @@
 				</div>
 			</div>
 		</div>
+	</div>
+	<div class="results" id="results" name="results">
+	  
 	</div>
 <!-- End Form -->
 			

@@ -37,6 +37,8 @@ rs = statement.executeQuery(query);
 rsmd = rs.getMetaData();
 
 JSONArray json = new JSONArray();
+JSONArray json1 = new JSONArray();
+JSONArray json2 = new JSONArray();
 while(rs.next()) {
   int numColumns = rsmd.getColumnCount();
   JSONObject obj = new JSONObject();
@@ -87,7 +89,7 @@ while(rs.next()) {
       obj.put(column_name, rs.getObject(column_name));
     }
   }
-  json.add(obj);
+  json1.add(obj);
 }
 
 // Trains
@@ -145,8 +147,9 @@ while(rs.next()) {
       obj.put(column_name, rs.getObject(column_name));
     }
   }
-  json.add(obj);
+  json2.add(obj);
 }
-
+json.add(json1);
+json.add(json2);
 json.writeJSONString(out); 
 %>
