@@ -22,7 +22,7 @@ public class TrainsBetweenStations {
 		
 		urlString += "&date="+dateFormatted;
 		
-		//System.out.println(urlString);	
+		//System.err.println(urlString);	
 		URL url;
 		try {
 			url = new URL(urlString);
