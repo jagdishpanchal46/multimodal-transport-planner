@@ -8,7 +8,16 @@ body {
 	height: 100%;
     text-align: left;
 }
+h1, form, button{border:0; margin:0; padding:0;}
+.spacer{clear:both; height:1px;}
+/* ----------- My Form ----------- */
+.inputForm{
+width:400px;
+padding:14px;
+align:left;
+}
 
+/* ----------- stylized ----------- */
 .cl { font-size: 0; line-height: 0; height: 0; clear: both; }
 
 a img { border: 0; }
@@ -27,23 +36,50 @@ a:hover { text-decoration: underline; cursor: pointer;}
 #header .shell {width: 1018px; background: url(images/header.jpg) no-repeat 10px 0;height: 84px;}
 
 h1#logo {padding-left: 250px; float: left; padding-top: 21px;}
-h1#logo a {display: block; background: url(images/logo.png) no-repeat 0 0; width: 50px; height: 10px;}
+h1#logo a {display: block; background: url(images/logo.png) no-repeat 0 0; width: 500px; height: 60px;}
 
 #navigation {background: url(images/nav.gif) repeat-x 0 0; height: 50px;}
 #navigation ul {float: right; list-style-type: none;}
 #navigation ul li {background: url(images/nav-divider.gif) no-repeat right 0; float: left; display: inline; padding-left: 23px; padding-right: 19px;}
 #navigation ul li a {color: #676767; font-family: tahoma, sans-serif; font-size: 13px; text-transform: uppercase; padding-top: 16px; display: block; height: 34px; float: left;}
 
-#heading {height: 340px; background: url(images/heading.png) repeat-x 0 0;}
+#heading {height: 120px; background: url(images/heading.png) repeat-x 0 0;}
 #heading .shell {width: 983px; position: relative;}
-#heading-cnt {background: url(images/heading-cnt.png) no-repeat 0 0; width: 983px; height: 161px;}
+#heading-cnt {background: url(images/heading-cnt.png) no-repeat 0 0; width: 1000px; height: 400px;}
 
-#side-nav ul {list-style-type: none; width: 205px; padding-top: 9px; padding-left: 20px;}
-#side-nav ul li {float: left; display: block; width: 205px; padding-bottom:5px;}
-#side-nav ul li a {width: 195px; height: 18px; display: block; padding-left: 10px; padding-top: 4px; text-transform: uppercase; color: #636363; font-size: 11px; font-weight: bold;position: relative;}
-#side-nav ul li .link {background: url(images/side-nav.png) no-repeat 0 0; width: 205px; height: 22px;}
-#side-nav ul li.active a {color: #77912b;}
-#side-nav ul li.active a:hover {text-decoration: none;}
+#side-nav label{
+display:block;
+font-weight:bold;
+text-align:right;
+width:140px;
+float:left;
+}
+#side-nav input{
+float:left;
+font-size:9px;
+padding:2px 1px;
+border:solid 1px #aacfe4;
+width:150px;
+margin:2px 0 20px 10px;
+}
+#side-nav button{
+clear:both;
+margin-left:150px;
+width:125px;
+height:31px;
+background:#666666 url(img/button.png) no-repeat;
+text-align:center;
+line-height:31px;
+color:#FFFFFF;
+font-size:11px;
+font-weight:bold;
+}
+/* #side-nav ul {list-style-type: none; width: 205px; padding-top: 9px; padding-left: 20px;} */
+/* #side-nav ul li {float: left; display: block; width: 205px; padding-bottom:5px;} */
+/* #side-nav ul li a {width: 195px; height: 18px; display: block; padding-left: 10px; padding-top: 4px; text-transform: uppercase; color: #636363; font-size: 11px; font-weight: bold;position: relative;} */
+/* #side-nav ul li .link {background: url(images/side-nav.png) no-repeat 0 0; width: 205px; height: 22px;} */
+/* #side-nav ul li.active a {color: #77912b;} */
+/* #side-nav ul li.active a:hover {text-decoration: none;} */
 
 #heading-box {position: absolute; top: 9px; left: 235px;}
 #heading-box-cnt {background: url(images/heading-box.png) no-repeat 0 0; width: 709px; height: 316px; padding-top: 5px; padding-left: 4px;}
