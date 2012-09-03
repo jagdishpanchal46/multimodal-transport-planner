@@ -45,6 +45,8 @@ public class HackU {
 	public static List<Station> allStations = new ArrayList<Station>();
 	//public static List<Station> majorStations = new ArrayList<Station>();
 	
+	public static String url = "jdbc:mysql://172.27.22.149:3306/DB";
+	
 	public static void init(){
 		//fillListsAirport(allAirportsFile, allAirports);
 		fillListsAirport("AIRPORTS", allAirports);
@@ -57,7 +59,7 @@ public class HackU {
 	public static void fillListsAirport(String TABLE, List<Airport> arrayList){
 		//System.out.println("MySQL Connect Example.");
 		Connection conn = null;
-		String url = "jdbc:mysql://172.27.22.147:3306/DB";
+		//String url = "jdbc:mysql://172.27.22.147:3306/DB";		
 		String dbName = "DB";		  
 		String userName = "root"; 
 		String password = "root";
@@ -116,7 +118,7 @@ public class HackU {
 	public static void fillListsStation(String file, List<Station> arrayList){
 		//System.out.println("MySQL Connect Example.");
 		Connection conn = null;
-		String url = "jdbc:mysql://172.27.22.147:3306/DB";
+		//String url = "jdbc:mysql://172.27.22.147:3306/DB";
 		String dbName = "DB";		  
 		String userName = "root"; 
 		String password = "root";
@@ -190,11 +192,13 @@ public class HackU {
 	**/
 	
 	public static void main(String args[]) throws InterruptedException, JSONException{
-		System.out.println(process("Vadodara", "Jhansi", "20120827", "20120829"));
+		//System.out.println(process("Allahabad", "Kanpur", "20120920", "20120922", "jdbc:mysql://172.27.22.147:3306/DB"));
+		System.out.println(process("Allahabad", "Kanpur", "20120920", "20120922", "jdbc:mysql://localhost:3306/DB"));
 	}
 	
-	public static List<JSONObject> process(String src, String dest, String time1, String time2) throws JSONException{
+	public static List<JSONObject> process(String src, String dest, String time1, String time2, String ip) throws JSONException{
 	//public static String process(String src, String dest, String time1, String time2) throws JSONException{
+		url = ip;
 		init();
 		//TODO take these inputs from a json file
 		//String srcName = "Vadodara";
@@ -244,7 +248,7 @@ public class HackU {
 				results.add(temp);
 			}
 		}
-		
+				
 		//System.err.println("Results2 : "+results.size());
 		
 		if(srcStation != null && destStation != null){
@@ -477,6 +481,7 @@ public class HackU {
 		else retval += "]";
 		//return retval;
 		return results;
+		
 	}
 
 	public static Airport findAirport(String airportName){	
