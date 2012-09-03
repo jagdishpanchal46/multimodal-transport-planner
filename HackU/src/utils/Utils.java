@@ -151,7 +151,7 @@ public class Utils {
 								temp.put("dt2", flightTemp.getString("dt"));									
 								temp.put("at2", flightTemp.getString("at"));
 								temp.put("ad2", flightTemp.getString("ad"));
-								temp.put("dd2", flightTemp.getString("dd"));
+								temp.put("dd2", "NA");
 								temp.put("pr2", flightTemp.getString("pr"));
 								
 								temp.put("pr", Double.toString( Double.parseDouble(flightTemp.getString("pr"))+Double.parseDouble(trainTemp.getString("pr")) ) );
