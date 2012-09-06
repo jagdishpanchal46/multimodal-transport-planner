@@ -6,6 +6,7 @@ import org.json.*;
 
 import utils.Utils;
 
+// Class to get train running information from cleartrip.com
 public class TrainsBetweenStations {
 	public static void main(String args[]){
 		System.out.println(trainsBetweenStations("JHS", "CNB", "2S", "20120826"));
