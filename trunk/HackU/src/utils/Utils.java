@@ -57,11 +57,20 @@ public class Utils {
 		
 		return retval;
 	}
+	public static int getHalt1(String at, String dt){
+		String retval="";
+		int atime = 60*Integer.parseInt(at.split(":")[0]) + Integer.parseInt(at.split(":")[1]);
+		int dtime = 60*Integer.parseInt(dt.split(":")[0]) + Integer.parseInt(dt.split(":")[1]);
+		
+		int diff = dtime - atime;
+		retval += Integer.toString(diff/60)+":"+Integer.toString(diff%60);
+		
+		return diff;
+	}
 	
 	public static List<JSONObject> concatanateRoutes(JSONObject json1, JSONObject json2, boolean bool, String date, String from, String via, String to) throws JSONException{
 		//TODO complete it		
 		List<JSONObject> retval = new ArrayList<JSONObject>();
-		
 		if(bool){
 			// means first flight, then train
 			try{
@@ -81,7 +90,7 @@ public class Utils {
 						if(at != "."){
 							JSONObject trainTemp = trains.getJSONObject(j); 
 							String dt = trainTemp.getString("dt");
-							if(at.compareTo(dt)<0){
+							if(getHalt1(at,dt)>120){
 								JSONObject temp = new JSONObject();
 								//TODO build object
 								temp.put("type", "2");
@@ -114,7 +123,7 @@ public class Utils {
 			} catch(JSONException e){		
 				e.printStackTrace();
 			}
-		} else{
+		} else {
 			try{
 				JSONObject allDates = json1.getJSONObject("calendar_json");
 				//System.err.println(allDates.toString());
@@ -132,7 +141,7 @@ public class Utils {
 						if(at != "."){
 							JSONObject flightTemp = flights.getJSONObject(j); 
 							String dt = flightTemp.getString("dt");
-							if(at.compareTo(dt)<0){
+							if(getHalt1(at,dt)>120){
 								JSONObject temp = new JSONObject();
 								//TODO build object
 
@@ -167,9 +176,11 @@ public class Utils {
 				e.printStackTrace();
 			}
 		}
+	
 		
 		return retval;
 	}
+	
 	
 	public static JSONObject createResultTrain(JSONObject obj, String _date) throws JSONException{
 		//TODO fix it
