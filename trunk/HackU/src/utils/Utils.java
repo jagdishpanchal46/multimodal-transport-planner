@@ -19,7 +19,9 @@ public class Utils {
 	public static String readPage(URL url) throws Exception {
 
         DefaultHttpClient client = new DefaultHttpClient();
-        HttpGet request = new HttpGet(url.toURI());
+      
+        //HttpGet request = new HttpGet(url.toURI());
+        HttpGet request = new HttpGet(url.toString());
         HttpResponse response = client.execute(request);
 
         Reader reader = null;
