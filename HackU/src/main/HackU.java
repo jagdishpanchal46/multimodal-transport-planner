@@ -566,7 +566,9 @@ class Station{
 	public String address;
 	public String state;	
 	
-	public Station(JSONObject json) throws JSONException{		
+	public Station(JSONObject json) throws JSONException{	
+		//String code = "";
+		
 		this.code = json.getString("code");
 		this.name = json.getString("name");
 		this.address = json.getString("address");
