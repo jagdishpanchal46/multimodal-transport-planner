@@ -69,9 +69,19 @@ public class Utils {
 		
 		return diff;
 	}
+	public static int getHalt2(String ad, String dd){
+		String retval="";
+		int adate = Integer.parseInt(ad.substring(6,8));
+		int ddate = Integer.parseInt(dd.substring(6,8));
+		
+		int diff1 = ddate - adate;
+				
+		return diff1;
+	}
 	
 	public static List<JSONObject> concatanateRoutes(JSONObject json1, JSONObject json2, boolean bool, String date, String from, String via, String to) throws JSONException{
-		//TODO complete it		
+		//TODO complete it	
+		//json1 already contains the date.why r we sending the date again....
 		List<JSONObject> retval = new ArrayList<JSONObject>();
 		if(bool){
 			// means first flight, then train
@@ -86,13 +96,27 @@ public class Utils {
 				//System.err.println(trains.toString());				
 				
 				for(int i=0; i<flights.length(); i++){
+					/*JSONObject flightTemp = flights.getJSONObject(i);
+					 *String at = flightTemp.getString("at");
+					 *String ad = flightTemp.getString("ad");
+					 *int ad1 = Integer.parseInt(ad.substring(6,8));
+					 *int edate = Integer.parseInt(end_date.substring(6,8));
+					 *for(int i=0;i<=(edate-ad1);i++)
+					 *{
+					 *		allDates = json2.getJSONObject("calendar_json");
+					 *		JSONArray trains = allDates.getJSONArray(date.substring(0,6)+(ad1+i).toString());*/
+					//above changes are not required as it is changed in tc1
 					for(int j=0; j<trains.length(); j++){
 						JSONObject flightTemp = flights.getJSONObject(i);						
 						String at = flightTemp.getString("at");
+						String ad=flightTemp.getString("ad");
 						if(at != "."){
-							JSONObject trainTemp = trains.getJSONObject(j); 
+							JSONObject trainTemp = trains.getJSONObject(j);
+							//System.out.println(trainTemp);
 							String dt = trainTemp.getString("dt");
-							if(getHalt1(at,dt)>120){
+							String dd=ad;//trainTemp.getString("dd");
+							String ad1=trainTemp.getString("ad");
+							if(((getHalt2(ad,dd))*24*60+getHalt1(at,dt)>120)&&(getHalt2(ad,dd))*24*60+getHalt1(at,dt)<300){
 								JSONObject temp = new JSONObject();
 								//TODO build object
 								temp.put("type", "2");
@@ -100,22 +124,23 @@ public class Utils {
 								temp.put("from", from);
 								temp.put("via", via);
 								temp.put("to", to);
+								temp.put("airline", flightTemp.getString("aln"));
+								temp.put("departure date 1", flightTemp.getString("dt"));									
+								temp.put("arrival time 1", flightTemp.getString("at"));
+								temp.put("arrival date 1", flightTemp.getString("ad"));
+								temp.put("departure date 1", date);
+								temp.put("price 1", flightTemp.getString("pr"));
 								
-								temp.put("dt1", flightTemp.getString("dt"));									
-								temp.put("at1", flightTemp.getString("at"));
-								temp.put("ad1", flightTemp.getString("ad"));
-								temp.put("dd1", date);
-								temp.put("pr1", flightTemp.getString("pr"));
+								temp.put("train", trainTemp.getString("aln"));
+								temp.put("departure time 2", trainTemp.getString("dt"));									
+								temp.put("arrival time 2", trainTemp.getString("at"));
+								temp.put("arrival date 2", trainTemp.getString("ad"));
+								temp.put("departure date 2", trainTemp.getString("dd"));
+								temp.put("price 2", trainTemp.getString("pr"));
 								
-								temp.put("dt2", trainTemp.getString("dt"));									
-								temp.put("at2", trainTemp.getString("at"));
-								temp.put("ad2", trainTemp.getString("ad"));
-								temp.put("dd2", trainTemp.getString("dd"));
-								temp.put("pr2", trainTemp.getString("pr"));
+								temp.put("total price", Double.toString( Double.parseDouble(flightTemp.getString("pr"))+Double.parseDouble(trainTemp.getString("pr")) ) );
 								
-								temp.put("pr", Double.toString( Double.parseDouble(flightTemp.getString("pr"))+Double.parseDouble(trainTemp.getString("pr")) ) );
-								
-								temp.put("ht", getHalt(at,dt));
+								//temp.put("ht", getHalt(at,dt));
 								
 								retval.add(temp);
 							}
@@ -137,13 +162,26 @@ public class Utils {
 				//System.err.println(flights.toString());						
 				
 				for(int i=0; i<trains.length(); i++){
+					/*JSONObject trainTemp = trains.getJSONObject(i);
+					 *String at = trainTemp.getString("at");
+					 *String ad = trainTemp.getString("ad");
+					 *int ad1 = Integer.parseInt(ad.substring(6,8));
+					 *int edate = Integer.parseInt(end_date.substring(6,8));
+					 *for(int i=0;i<=(edate-ad1);i++)
+					 *{
+					 *		allDates = json2.getJSONObject("calendar_json");
+					 *		JSONArray trains = allDates.getJSONArray(date.substring(0,6)+(ad1+i).toString());*/
+					//above changes are not required
 					for(int j=0; j<flights.length(); j++){
 						JSONObject trainTemp = trains.getJSONObject(i); 
 						String at = trainTemp.getString("at");
+						String ad=trainTemp.getString("ad");
 						if(at != "."){
 							JSONObject flightTemp = flights.getJSONObject(j); 
 							String dt = flightTemp.getString("dt");
-							if(getHalt1(at,dt)>120){
+							String dd=flightTemp.getString("dd");
+							String ad1=flightTemp.getString("ad");
+							if(getHalt2(ad,dd)*24*60+getHalt1(at,dt)>120&&getHalt2(ad,dd)*24*60+getHalt1(at,dt)<300){
 								JSONObject temp = new JSONObject();
 								//TODO build object
 
@@ -153,19 +191,21 @@ public class Utils {
 								temp.put("via", via);
 								temp.put("to", to);
 								
-								temp.put("dt1", trainTemp.getString("dt"));									
-								temp.put("at1", trainTemp.getString("at"));
-								temp.put("ad1", trainTemp.getString("ad"));
-								temp.put("dd1", trainTemp.getString("dd"));
-								temp.put("pr1", trainTemp.getString("pr"));
+								temp.put("train", trainTemp.getString("train"));
+								temp.put("departure time 1", trainTemp.getString("dt"));									
+								temp.put("arrival time 1", trainTemp.getString("at"));
+								temp.put("arrival date 1", trainTemp.getString("ad"));
+								temp.put("departure date 1", trainTemp.getString("dd"));
+								temp.put("price 1", trainTemp.getString("pr"));
 								
-								temp.put("dt2", flightTemp.getString("dt"));									
-								temp.put("at2", flightTemp.getString("at"));
-								temp.put("ad2", flightTemp.getString("ad"));
-								temp.put("dd2", "NA");
-								temp.put("pr2", flightTemp.getString("pr"));
+								temp.put("airline", flightTemp.getString("aln"));
+								temp.put("departure time 2", flightTemp.getString("dt"));									
+								temp.put("arrival time 2", flightTemp.getString("at"));
+								temp.put("arrival date 2", flightTemp.getString("ad"));
+								temp.put("departure date 2", "NA");
+								temp.put("price 2", flightTemp.getString("pr"));
 								
-								temp.put("pr", Double.toString( Double.parseDouble(flightTemp.getString("pr"))+Double.parseDouble(trainTemp.getString("pr")) ) );
+								temp.put("total price", Double.toString( Double.parseDouble(flightTemp.getString("pr"))+Double.parseDouble(trainTemp.getString("pr")) ) );
 								
 								temp.put("ht", getHalt(at,dt));
 								
