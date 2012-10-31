@@ -20,8 +20,8 @@ public class Utils {
 
         DefaultHttpClient client = new DefaultHttpClient();
       
-        //HttpGet request = new HttpGet(url.toURI());
-        HttpGet request = new HttpGet(url.toString());
+        HttpGet request = new HttpGet(url.toURI());
+        request = new HttpGet(url.toString());//HttpGet request = new HttpGet(url.toString());
         HttpResponse response = client.execute(request);
 
         Reader reader = null;
@@ -87,12 +87,15 @@ public class Utils {
 			// means first flight, then train
 			try{
 				JSONObject allDates = json1.getJSONObject("calendar_json");
+				System.out.println(allDates.toString());
 				//System.err.println(allDates.toString());
 				JSONArray flights = allDates.getJSONArray(date);
 				//System.err.println(flights.toString());
 				
 				allDates = json2.getJSONObject("calendar_json");
 				JSONArray trains = allDates.getJSONArray(date);
+				//System.out.println(trains);
+				//System.out.println(flights);
 				//System.err.println(trains.toString());				
 				
 				for(int i=0; i<flights.length(); i++){
@@ -107,21 +110,23 @@ public class Utils {
 					 *		JSONArray trains = allDates.getJSONArray(date.substring(0,6)+(ad1+i).toString());*/
 					//above changes are not required as it is changed in tc1
 					for(int j=0; j<trains.length(); j++){
-						JSONObject flightTemp = flights.getJSONObject(i);						
+						JSONObject flightTemp = flights.getJSONObject(i);
+						//System.out.println(flightTemp);
 						String at = flightTemp.getString("at");
 						String ad=flightTemp.getString("ad");
 						if(at != "."){
 							JSONObject trainTemp = trains.getJSONObject(j);
 							//System.out.println(trainTemp);
 							String dt = trainTemp.getString("dt");
-							String dd=ad;//trainTemp.getString("dd");
-							String ad1=trainTemp.getString("ad");
+							String dd=date;
+							//String ad1=trainTemp.getString("ad");
 							if(((getHalt2(ad,dd))*24*60+getHalt1(at,dt)>120)&&(getHalt2(ad,dd))*24*60+getHalt1(at,dt)<300){
 								JSONObject temp = new JSONObject();
 								//TODO build object
 								temp.put("type", "2");
 								
 								temp.put("from", from);
+								System.out.println(temp);
 								temp.put("via", via);
 								temp.put("to", to);
 								temp.put("airline", flightTemp.getString("aln"));
@@ -146,6 +151,7 @@ public class Utils {
 							}
 						}						
 					}
+					//System.out.println(retval.toString());
 				}
 			} catch(JSONException e){		
 				e.printStackTrace();
@@ -179,8 +185,8 @@ public class Utils {
 						if(at != "."){
 							JSONObject flightTemp = flights.getJSONObject(j); 
 							String dt = flightTemp.getString("dt");
-							String dd=flightTemp.getString("dd");
-							String ad1=flightTemp.getString("ad");
+							String dd=flightTemp.getString("ad");
+							//String ad1=flightTemp.getString("ad");
 							if(getHalt2(ad,dd)*24*60+getHalt1(at,dt)>120&&getHalt2(ad,dd)*24*60+getHalt1(at,dt)<300){
 								JSONObject temp = new JSONObject();
 								//TODO build object
