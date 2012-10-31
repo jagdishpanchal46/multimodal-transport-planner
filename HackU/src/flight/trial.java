@@ -14,22 +14,24 @@ import org.json.JSONArray;
 import utils.Utils;
 public class trial
 {	
-	public static void main(String args[])throws Throwable
-	{
-		String from="HYD",via="BOM",to="DEL";
-		//String from="JHS",via="CNB",to="LKO";
-		int o=1,v=1,d=1;
-		String sdate="20121128",edate="20121128";
-		List< List<JSONObject> > results = transportcombinations(from,to,via,sdate,edate);
+	public static void main(String args[]){
+		//String from="HYD",via="LKO",to="KNU";
+		String from="JHS",via="CNB",to="LKO";
+		int o=1,v=1,d=0;
+		
+		String sdate="20121128",edate="20121130";
+		//JSONObject jsonFlight123=FlightsBetweenStations.flightsBetweenStations(from,"DEL",sdate,edate);
+		//System.out.println(jsonFlight123);
+		List< List<JSONObject> > results = transportcombinations(from,to,via,sdate,edate,o,v,d);
 		try
 		{
 			JSONObject jsontrain=Utils.createResultTrain(TrainsBetweenStations.trainsBetweenStations(from,to,"SL",sdate),sdate);
-			JSONObject all_dates1=jsontrain.getJSONObject("calendar_json");//we are getting null object
+			JSONObject all_dates1=jsontrain.getJSONObject("calendar_json");
 			JSONArray trains=all_dates1.getJSONArray(sdate);
 			for(int i=0;i<trains.length();i++)
 			{
 				JSONObject dates=trains.getJSONObject(i);
-				System.out.println(dates);
+				//System.out.println(dates);
 				//System.out.println("Train="+dates.getJSONObject("train"));
 				//System.out.println("Departs="+dates.getJSONObject("dd")+" "+dates.getJSONObject("dt")+" from="+from);
 				//System.out.println("Arrives="+dates.getJSONObject("ad")+" "+dates.getJSONObject("at")+" at="+from);
@@ -48,11 +50,11 @@ public class trial
 				JSONObject routes=result_at_i.get(j);
 				try
 				{
-					if(o==1&&d==1)
+					if(o==1&&d==1)//need to do similar thing for trains
 					{
 						JSONObject jsonflight=FlightsBetweenStations.flightsBetweenStations(from,to,sdate,sdate);
 						JSONObject all_dates=jsonflight.getJSONObject("calendar_json");
-						JSONArray flights=all_dates.getJSONArray(sdate);
+						JSONArray flights=all_dates.getJSONArray(sdate);//manipulate the date here again
 						for(int k=0;k<flights.length();k++)
 						{
 							JSONObject dates=flights.getJSONObject(k);
@@ -65,7 +67,7 @@ public class trial
 					}
 					else
 					{
-						System.out.println(routes);//manipulate the date here again
+						System.out.println(routes);
 					}
 				}
 				catch(JSONException e)
@@ -129,21 +131,18 @@ public class trial
 		String s=Integer.toString(start_date);
 		return s;
 	}
-	public static List< List<JSONObject> > transportcombinations(String origin,String destination,String via,String sdate,String edate)
+	public static List< List<JSONObject> > transportcombinations(String origin,String destination,String via,String sdate,String edate,int o,int v,int d)
 	{
 		int end_date=Integer.parseInt(edate);
 		int start_date=Integer.parseInt(sdate);
 		int diff=end_date-start_date;
 		List< List<JSONObject> > retval=  new ArrayList< List<JSONObject> >();
 		
-		List<JSONObject> retvals5 =  new ArrayList<JSONObject>(),results5= new ArrayList<JSONObject>();//the different variable types store the different transport routes
+		List<JSONObject> retvals5 = new ArrayList<JSONObject>(),results5=new ArrayList<JSONObject>();
 		List<JSONObject> retvals1 = new ArrayList<JSONObject>(),results1=new ArrayList<JSONObject>();
 		List<JSONObject> retvals2 = new ArrayList<JSONObject>(),results2=new ArrayList<JSONObject>();
 		List<JSONObject> retvals3 = new ArrayList<JSONObject>(),results3=new ArrayList<JSONObject>();
-		int o=1,v=1,d=1;
-		JSONObject jsonFlight=null,jsonFlight1=null;
-		JSONObject jsonTrain1=TrainsBetweenStations.trainsBetweenStations(origin,via,"SL",sdate);
-		JSONObject jsonTrain2=TrainsBetweenStations.trainsBetweenStations(via,destination,"SL",sdate);	
+		JSONObject jsonFlight=null,jsonFlight1=null,jsonTrain1=null,jsonTrain2=null;		
 		/* // TODO Auto-generated catch block
 		 * variable type(result,retvals)                          transport route
 		 * 1                                                   flight---->train
@@ -156,13 +155,17 @@ public class trial
 		if(o==1&&v==1&&d==0)
 		{
 			jsonFlight= FlightsBetweenStations.flightsBetweenStations(origin,via,sdate,sdate);
-			for(int k=0;k<=diff;k++)
+			for(int k=0;!(date(k,sdate).equals(edate));k++)
 			{
+				/*start_date+=k;
+				sdate=sdate.substring(0,6)+Integer.toString(start_date);*/
 				JSONObject json_Train2=TrainsBetweenStations.trainsBetweenStations(via,destination,"SL",date(k,sdate));
 			 
 			try
 			{
 				retvals1= Utils.concatanateRoutes(jsonFlight, Utils.createResultTrain(json_Train2,date(k,sdate)),true,date(k,sdate),origin+"("+origin +")",via+"("+via+")", destination+"("+destination+")");
+				//in the date field of the above function should we send jsonFlight's date or date(k,sdate)
+				//we need to create another field to send jsonFlight's date separately
 				for(int i=0;i<retvals1.size();i++)
 				{
 					results1.add( retvals1.get(i) );
@@ -178,12 +181,14 @@ public class trial
 		{
 			jsonFlight1=FlightsBetweenStations.flightsBetweenStations(via,destination,sdate,edate);
 			jsonTrain1=TrainsBetweenStations.trainsBetweenStations(origin,via,"SL",sdate);
-			for(int k=0;k<=diff;k++)
-			{
-				JSONObject json_Train2=TrainsBetweenStations.trainsBetweenStations(via,destination,"SL",date(k,sdate));
+			//for(int k=0;k<=diff;k++)
+			//{
+				/*start_date+=k;
+				sdate=sdate.substring(0,6)+Integer.toString(start_date);*/
+				//JSONObject json_Train2=TrainsBetweenStations.trainsBetweenStations(via,destination,"SL",date(k,sdate));
 			try
 			{
-				retvals2= Utils.concatanateRoutes(jsonFlight1, Utils.createResultTrain(json_Train2,date(k,sdate)),false,date(k,sdate),origin+"("+origin +")",via+"("+via+")", destination+"("+destination+")");//note that bool is false
+				retvals2= Utils.concatanateRoutes(jsonFlight1, Utils.createResultTrain(jsonTrain1,sdate),false,sdate,origin+"("+origin +")",via+"("+via+")", destination+"("+destination+")");//note that bool is false
 				for(int i=0;i<retvals2.size();i++)
 				{
 					results2.add( retvals2.get(i) );
@@ -193,7 +198,7 @@ public class trial
 			{
 				e.printStackTrace();
 			}
-			}
+			//}
 		}
 		else if(o==1&&v==1&&d==1)
 		{
@@ -203,12 +208,14 @@ public class trial
 			try
 			{
 				retvals3= Utils.concatanateRoutes(jsonFlight2,jsonFlight3,true,sdate,origin+"("+origin +")",via+"("+via+")", destination+"("+destination+")");
-				for(int k=0;k<=end_date-start_date;k++)
+				//System.out.println(retvals3);
+				for(int k=0;!(date(k,sdate).equals(edate));k++)
 				{
 					/*start_date+=k;
 					sdate=sdate.substring(0,6)+Integer.toString(start_date);;*/
-					retvals2= Utils.concatanateRoutes(jsonFlight3,Utils.createResultTrain(jsonTrain2,date(k,sdate)),false,date(k,sdate),origin+"("+origin +")",via+"("+via+")", destination+"("+destination+")");
-					retvals1= Utils.concatanateRoutes(jsonFlight2,Utils.createResultTrain(jsonTrain2,date(k,sdate)),true,date(k,sdate),origin+"("+origin +")",via+"("+via+")", destination+"("+destination+")");
+					JSONObject json_Train2=TrainsBetweenStations.trainsBetweenStations(via,destination,"SL",date(k,sdate));
+					retvals2= Utils.concatanateRoutes(jsonFlight3,Utils.createResultTrain(json_Train2,date(k,sdate)),false,date(k,sdate),origin+"("+origin +")",via+"("+via+")", destination+"("+destination+")");
+					retvals1= Utils.concatanateRoutes(jsonFlight2,Utils.createResultTrain(json_Train2,date(k,sdate)),true,date(k,sdate),origin+"("+origin +")",via+"("+via+")", destination+"("+destination+")");
 					for(int i=0;i<retvals1.size();i++)
 					{
 						results1.add( retvals1.get(i) );
@@ -228,14 +235,14 @@ public class trial
 				e.printStackTrace();
 			}
 		}
-		for(int k=0;k<=diff;k++)
+		for(int k=0;!(date(k,sdate).equals(edate));k++)
 		{
 			/*start_date+=k;
 			sdate1=sdate.substring(0,6)+Integer.toString(start_date);;*/
 			jsonTrain2=TrainsBetweenStations.trainsBetweenStations(via,destination,"SL",date(k,sdate));
 			try
 			{
-				retvals5=Utils.concatanateRoutes(Utils.createResultTrain(jsonTrain1,sdate),Utils.createResultTrain(jsonTrain2, date(k,sdate)),true,date(k,sdate),origin+"("+origin +")",via+"("+via+")", destination+"("+destination+")");
+				retvals5=Utils.concatanateRoutes(Utils.createResultTrain(jsonTrain1,date(k,sdate)),Utils.createResultTrain(jsonTrain2, date(k,sdate)),true,date(k,sdate),origin+"("+origin +")",via+"("+via+")", destination+"("+destination+")");
 				for(int i=0;i<retvals5.size();i++)
 				{
 					results5.add( retvals5.get(i));
