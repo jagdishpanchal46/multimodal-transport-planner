@@ -15,6 +15,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+//changes to be made in utils include adding a parameter in concatanateroutes
+//should be done so that the sdate of jsonflight remains the same
 public class Utils {
 	public static String readPage(URL url) throws Exception {
 
@@ -64,22 +66,55 @@ public class Utils {
 		int atime = 60*Integer.parseInt(at.split(":")[0]) + Integer.parseInt(at.split(":")[1]);
 		int dtime = 60*Integer.parseInt(dt.split(":")[0]) + Integer.parseInt(dt.split(":")[1]);
 		
-		int diff = dtime - atime;
+		int diff = dtime - atime; 
 		retval += Integer.toString(diff/60)+":"+Integer.toString(diff%60);
 		
 		return diff;
 	}
+	public static int diff_dates(int m,int adate,int ddate)
+	{
+		int diff1=ddate-adate;
+		if(m==4||m==6||m==9||m==11)
+		{
+			if(adate==30&&ddate!=30)
+			{
+				return (30-adate+ddate);
+			}
+			else
+			{
+				return diff1;
+			}
+		}
+		else if(m==2)
+		{
+			if(adate==28&&ddate!=28)
+			{
+				return (28-adate+ddate);
+			}
+		}
+		else
+		{
+			if(adate==31&&ddate!=31)
+			{
+				return (31-adate+ddate);
+			}
+		}
+		return 0;
+	}
 	public static int getHalt2(String ad, String dd){
-		String retval="";
-		int adate = Integer.parseInt(ad.substring(6,8));
-		int ddate = Integer.parseInt(dd.substring(6,8));
-		
-		int diff1 = ddate - adate;
-				
-		return diff1;
+		int month=Integer.parseInt(ad.substring(ad.length()-4,ad.length()-2));
+		int adate = Integer.parseInt(ad.substring(ad.length()-2,ad.length()));
+		int ddate = Integer.parseInt(dd.substring(dd.length()-2,dd.length()));
+		return diff_dates(month,adate,ddate)*24*60;
+	}
+	public static int getHalt3(String ad,String dd,String at,String dt)
+	{
+		int a=getHalt1(at,dt);
+		int b=getHalt2(ad,dd);
+		return (a+b);
 	}
 	
-	public static List<JSONObject> concatanateRoutes(JSONObject json1, JSONObject json2, boolean bool, String date, String from, String via, String to) throws JSONException{
+	public static List<JSONObject> concatanateRoutes(JSONObject json1, JSONObject json2, boolean bool, String date, String from, String via, String to,String sdate) throws JSONException{
 		//TODO complete it	
 		//json1 already contains the date.why r we sending the date again....
 		List<JSONObject> retval = new ArrayList<JSONObject>();
@@ -87,9 +122,9 @@ public class Utils {
 			// means first flight, then train
 			try{
 				JSONObject allDates = json1.getJSONObject("calendar_json");
-				System.out.println(allDates.toString());
+				//System.out.println(allDates.toString());
 				//System.err.println(allDates.toString());
-				JSONArray flights = allDates.getJSONArray(date);
+				JSONArray flights = allDates.getJSONArray(sdate);
 				//System.err.println(flights.toString());
 				
 				allDates = json2.getJSONObject("calendar_json");
@@ -118,19 +153,22 @@ public class Utils {
 							JSONObject trainTemp = trains.getJSONObject(j);
 							//System.out.println(trainTemp);
 							String dt = trainTemp.getString("dt");
-							String dd=date;
+							String dd=trainTemp.getString("dd");
+							//System.out.println(ad+'\n'+dd+'\n'+at+'\n'+dt);
+							//System.out.println(getHalt1(at,dt));
+							//System.out.println(getHalt2(ad,dd)*24*60+getHalt1(at,dt));
+							//above statement is returning false
 							//String ad1=trainTemp.getString("ad");
-							if(((getHalt2(ad,dd))*24*60+getHalt1(at,dt)>120)&&(getHalt2(ad,dd))*24*60+getHalt1(at,dt)<300){
+							if(getHalt3(ad,dd,at,dt)>120&&getHalt3(ad,dd,at,dt)<300)/*&&(getHalt2(ad,dd))*24*60+getHalt1(at,dt)<300*/{
 								JSONObject temp = new JSONObject();
 								//TODO build object
 								temp.put("type", "2");
 								
 								temp.put("from", from);
-								System.out.println(temp);
 								temp.put("via", via);
 								temp.put("to", to);
 								temp.put("airline", flightTemp.getString("aln"));
-								temp.put("departure date 1", flightTemp.getString("dt"));									
+								temp.put("departure time 1", flightTemp.getString("dt"));									
 								temp.put("arrival time 1", flightTemp.getString("at"));
 								temp.put("arrival date 1", flightTemp.getString("ad"));
 								temp.put("departure date 1", date);
@@ -147,7 +185,7 @@ public class Utils {
 								
 								//temp.put("ht", getHalt(at,dt));
 								
-								retval.add(temp);
+								retval.add(temp);      
 							}
 						}						
 					}
@@ -160,7 +198,7 @@ public class Utils {
 			try{
 				JSONObject allDates = json1.getJSONObject("calendar_json");
 				//System.err.println(allDates.toString());
-				JSONArray trains = allDates.getJSONArray(date);
+				JSONArray trains = allDates.getJSONArray(sdate);
 				//System.err.println(trains.toString());
 				
 				allDates = json2.getJSONObject("calendar_json");
@@ -187,7 +225,7 @@ public class Utils {
 							String dt = flightTemp.getString("dt");
 							String dd=flightTemp.getString("ad");
 							//String ad1=flightTemp.getString("ad");
-							if(getHalt2(ad,dd)*24*60+getHalt1(at,dt)>120&&getHalt2(ad,dd)*24*60+getHalt1(at,dt)<300){
+							if(getHalt3(ad,dd,at,dt)>120&&getHalt3(ad,dd,at,dt)<300){
 								JSONObject temp = new JSONObject();
 								//TODO build object
 
@@ -296,7 +334,9 @@ public class Utils {
 	    	tokenizer = new StringTokenizer(oneres.getString("depart_date"), "/");
 	    	String year, date, month;
 	    	date = tokenizer.nextToken();
+	    	//System.out.println(date);
 	    	month = tokenizer.nextToken();
+	    	//System.out.println(month);
 	    	year = tokenizer.nextToken(); 
 	    	ftDate = year+month+date;
 	    	JSONObject entry = new JSONObject();	    	
