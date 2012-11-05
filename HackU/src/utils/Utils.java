@@ -78,6 +78,7 @@ public class Utils {
 		{
 			if(adate==30&&ddate!=30)
 			{
+				//System.out.println(30-adate+ddate);
 				return (30-adate+ddate);
 			}
 			else
@@ -102,9 +103,12 @@ public class Utils {
 		return 0;
 	}
 	public static int getHalt2(String ad, String dd){
-		int month=Integer.parseInt(ad.substring(ad.length()-4,ad.length()-2));
-		int adate = Integer.parseInt(ad.substring(ad.length()-2,ad.length()));
-		int ddate = Integer.parseInt(dd.substring(dd.length()-2,dd.length()));
+		//System.out.println(dd);
+		int month=Integer.parseInt(ad.substring(3,5));
+		//System.out.println(month);
+		int adate = Integer.parseInt(ad.substring(0,2));
+		int ddate = Integer.parseInt(dd.substring(0,2));
+		//System.out.println(ddate-adate);
 		return diff_dates(month,adate,ddate)*24*60;
 	}
 	public static int getHalt3(String ad,String dd,String at,String dt)
@@ -116,7 +120,7 @@ public class Utils {
 	
 	public static List<JSONObject> concatanateRoutes(JSONObject json1, JSONObject json2, boolean bool, String date, String from, String via, String to,String sdate) throws JSONException{
 		//TODO complete it	
-		//json1 already contains the date.why r we sending the date again....
+		//json1 already contains the date.why r we sending the date again??
 		List<JSONObject> retval = new ArrayList<JSONObject>();
 		if(bool){
 			// means first flight, then train
@@ -154,6 +158,9 @@ public class Utils {
 							//System.out.println(trainTemp);
 							String dt = trainTemp.getString("dt");
 							String dd=trainTemp.getString("dd");
+							//System.out.println(ad);
+							//System.out.println("above is ad and below is dd");
+							//System.out.println(dd);
 							//System.out.println(ad+'\n'+dd+'\n'+at+'\n'+dt);
 							//System.out.println(getHalt1(at,dt));
 							//System.out.println(getHalt2(ad,dd)*24*60+getHalt1(at,dt));
@@ -161,6 +168,7 @@ public class Utils {
 							//String ad1=trainTemp.getString("ad");
 							if(getHalt3(ad,dd,at,dt)>120&&getHalt3(ad,dd,at,dt)<300)/*&&(getHalt2(ad,dd))*24*60+getHalt1(at,dt)<300*/{
 								JSONObject temp = new JSONObject();
+								//System.out.println(flightTemp);
 								//TODO build object
 								temp.put("type", "2");
 								
@@ -171,7 +179,7 @@ public class Utils {
 								temp.put("departure time 1", flightTemp.getString("dt"));									
 								temp.put("arrival time 1", flightTemp.getString("at"));
 								temp.put("arrival date 1", flightTemp.getString("ad"));
-								temp.put("departure date 1", date);
+								temp.put("departure date 1",sdate);//flightTemp.getString("dd"));
 								temp.put("price 1", flightTemp.getString("pr"));
 								
 								temp.put("train", trainTemp.getString("aln"));
@@ -180,6 +188,7 @@ public class Utils {
 								temp.put("arrival date 2", trainTemp.getString("ad"));
 								temp.put("departure date 2", trainTemp.getString("dd"));
 								temp.put("price 2", trainTemp.getString("pr"));
+								temp.put("halting time(in min)",Integer.toString(getHalt3(ad,dd,at,dt)) );
 								
 								temp.put("total price", Double.toString( Double.parseDouble(flightTemp.getString("pr"))+Double.parseDouble(trainTemp.getString("pr")) ) );
 								
@@ -248,10 +257,9 @@ public class Utils {
 								temp.put("arrival date 2", flightTemp.getString("ad"));
 								temp.put("departure date 2", "NA");
 								temp.put("price 2", flightTemp.getString("pr"));
-								
+								temp.put("halting time(in min)",Integer.toString(getHalt3(ad,dd,at,dt)) );
 								temp.put("total price", Double.toString( Double.parseDouble(flightTemp.getString("pr"))+Double.parseDouble(trainTemp.getString("pr")) ) );
-								
-								temp.put("ht", getHalt(at,dt));
+
 								
 								retval.add(temp);
 							}
