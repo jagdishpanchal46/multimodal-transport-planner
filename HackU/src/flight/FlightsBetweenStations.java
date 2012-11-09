@@ -9,7 +9,7 @@ import org.json.JSONObject;
 
 public class FlightsBetweenStations {
 	public static void main(String args[]){
-		System.out.println(flightsBetweenStations("DEL", "BLR", "20120927", "20120928"));
+		System.out.println(flightsBetweenStations("DEL", "BLR", "20121129", "20121129"));
 	}		
 	
 	public static JSONObject flightsBetweenStations(String _airport1, String _airport2, String _startDate, String _endDate){
