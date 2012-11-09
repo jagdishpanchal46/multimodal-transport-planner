@@ -12,6 +12,7 @@ public class FlightsBetweenStations {
 		System.out.println(flightsBetweenStations("DEL", "BLR", "20121129", "20121129"));
 	}		
 	
+	//@SuppressWarnings("unchecked")
 	public static JSONObject flightsBetweenStations(String _airport1, String _airport2, String _startDate, String _endDate){
 		String urlString = "http://www.cleartrip.com/flights/calendar/calendarstub.json?";
 		urlString += "from="+_airport1;
