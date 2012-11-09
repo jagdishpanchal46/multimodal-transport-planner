@@ -8,8 +8,12 @@ import utils.Utils;
 
 // Class to get train running information from cleartrip.com
 public class TrainsBetweenStations {
+	
+	// Driver function
 	public static void main(String args[]){
-		System.out.println(trainsBetweenStations("JHS", "CNB", "2S", "20120826"));
+		//System.out.println(trainsBetweenStations("JHS", "CNB", "2S", "20120826"));
+		//System.out.println(trainsBetweenStations("LKO", "CNB", "2S", "20121130"));
+		System.out.println(trainsBetweenStations("SC", "TATA", "2S", "20121130"));
 	}
 	
 	public static JSONObject trainsBetweenStations(String station1, String station2, String Class, String date){
