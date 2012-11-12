@@ -15,7 +15,7 @@ import utils.Utils;
 public class transportcombination1
 {		
 	public static void main(String args[]){
-		String[][] places = { {"SC", "BBS", "HWH"}, {"HYD", "BBI", "CCU"} };
+		String[][] places = { {"BNC", "BBS", "DLI"}, {"BLR", "BBI", "DEL"} };
 		String[] dates = {"20121128","20121230"};
 		String classTrain = "3A";
 		int[] flags = {1,1,1};
@@ -35,7 +35,7 @@ public class transportcombination1
 		
 		int o = flags[0],v = flags[1],d = flags[2];
 		
-		List< List<JSONObject> > results = transportcombinations(from, to, via, from1, to1, via1, classTrain, sdate, edate, o, v, d);
+		/*List< List<JSONObject> > results = */transportcombinations(from, to, via, from1, to1, via1, classTrain, sdate, edate, o, v, d);
 		
 		try
 		{
@@ -65,8 +65,7 @@ public class transportcombination1
 				for(int k=0;k<flights.length();k++)
 				{
 					JSONObject dates=flights.getJSONObject(k);
-					
-					System.out.println("Airline="+dates.getString("al"));
+					System.out.println("Airline="+dates.getString("aln"));
 					System.out.println("Departs="+sdate+" "+dates.getString("dt")+" from="+from);
 					System.out.println("Arrives="+dates.getString("ad")+" "+dates.getString("at")+" at="+to);
 					System.out.println("fare="+dates.getString("pr")+"\n\n");
@@ -77,39 +76,6 @@ public class transportcombination1
 		{
 			e.printStackTrace();
 		}
-		/*try
-		{
-			for(int i=0;i<results.size();i++)
-			{
-				List<JSONObject> result_at_i=results.get(i);
-				for(int j=0;j<result_at_i.size();j++)
-				{
-					JSONObject routes=result_at_i.get(j);
-					System.out.println("type:"+routes.getString("type"));
-					System.out.print("mode 1:"+routes.getString("mode1")+"\t");
-					System.out.println("mode 2:"+routes.getString("mode2"));
-					System.out.println("from:"+routes.getString("from")+"\t"+"via:"+routes.getString("via")+"\t"+routes.getString("to"));
-					System.out.print("departure date 1="+routes.getString("departure date 1")+"\t");
-					System.out.println("departure time 1="+routes.getString("departure time 1"));
-					System.out.print("arrival date 1="+routes.getString("arrival date 1")+"\t");
-					System.out.println("arrival time 1="+routes.getString("arrival time 1"));
-					System.out.print("departure date 2="+routes.getString("departure date 2")+"\t");
-					System.out.println("departure time 2="+routes.getString("departure time 2"));
-					System.out.print("arrival date 2="+routes.getString("arrival date 2")+"\t");
-					System.out.println("arrival time 2="+routes.getString("arrival time 2"));
-					System.out.println("halt time(in minutes):"+routes.getString("halting time(in min)"));
-					System.out.print("price 1="+routes.getString("price 1")+"\t\t");
-					System.out.println("price 2="+routes.getString("price 2"));
-					System.out.println("total price="+routes.getString("total price"));
-					System.out.println("\n");
-					
-				}
-			}
-		}
-		catch(JSONException e)
-		{
-			e.printStackTrace();
-		}*/
 	}
 	
 	public static void print(List<JSONObject> retval)
@@ -138,7 +104,7 @@ public class transportcombination1
 				System.out.println("\n");
 				
 			}
-		} catch(JSONException e){
+		}catch(JSONException e){
 			// do nothing for now
 		}
 	}
@@ -157,7 +123,6 @@ public class transportcombination1
 		int start_date = Integer.parseInt(sdate);		
 		int m = (start_date%10000)/100;
 				
-		//System.out.println(m);
 		if(m<12)
 		{
 			if(m==4||m==6||m==9||m==11)
@@ -165,7 +130,6 @@ public class transportcombination1
 				if((start_date+i)%100>30)
 				{
 					start_date += (100-30+i);//we add (100-30)
-					//System.out.println(i+'\n'+start_date);
 				}
 				else
 				{
@@ -206,7 +170,6 @@ public class transportcombination1
 				start_date+=i;
 			}
 		}		
-		//System.out.println(s);
 		return Integer.toString(start_date);
 	}
 	
@@ -227,7 +190,7 @@ public class transportcombination1
 	 * @return
 	 * 
 	 */
-	public static List< List<JSONObject> > transportcombinations(	String origin,
+	public static /*List< List<JSONObject> >*/ void transportcombinations(	String origin,
 																	String destination,
 																	String via,
 																	String origin1,
@@ -239,28 +202,25 @@ public class transportcombination1
 																	int o,int v,int d){
 		
 		String train_class = classTrain;
-		//int end_date=Integer.parseInt(edate);
-		//int start_date=Integer.parseInt(sdate);
-		//int diff=end_date-start_date;
-		List< List<JSONObject> > retval =  new ArrayList< List<JSONObject> >();
+		//List< List<JSONObject> > retval =  new ArrayList< List<JSONObject> >();
 		
 		//flight---->train
-		List<JSONObject> retvals1 = new ArrayList<JSONObject>(), results1=new ArrayList<JSONObject>();
+		List<JSONObject> retvals1 = new ArrayList<JSONObject>();
 		
 		//train----->flight
-		List<JSONObject> retvals2 = new ArrayList<JSONObject>(), results2=new ArrayList<JSONObject>();
+		List<JSONObject> retvals2 = new ArrayList<JSONObject>();
 		
 		//flight---->flight
-		List<JSONObject> retvals3 = new ArrayList<JSONObject>(), results3=new ArrayList<JSONObject>();
+		List<JSONObject> retvals3 = new ArrayList<JSONObject>();
 		
 		//train----->train
-		List<JSONObject> retvals5 = new ArrayList<JSONObject>(), results5=new ArrayList<JSONObject>();				
+		List<JSONObject> retvals5 = new ArrayList<JSONObject>();				
 		
 		
 		JSONObject jsonFlight1 = null;
 		JSONObject jsonFlight2 = null;
 		
-		JSONObject jsonTrain1 = TrainsBetweenStations.trainsBetweenStations(origin,via,"SL",sdate);
+		JSONObject jsonTrain1 = TrainsBetweenStations.trainsBetweenStations(origin,via,classTrain,sdate);
 		JSONObject jsonTrain2 = null;		
 		
 		/* // TODO Auto-generated catch block
@@ -278,8 +238,6 @@ public class transportcombination1
 			jsonFlight1 = FlightsBetweenStations.flightsBetweenStations(origin1,via1,sdate,sdate);
 			
 			for(int k=0; !(date(k,sdate).equals(edate)); k++) {			
-				/*start_date+=k;
-				sdate=sdate.substring(0,6)+Integer.toString(start_date);*/
 				
 				jsonTrain2 = TrainsBetweenStations.trainsBetweenStations( via, destination, train_class, date(k,sdate) );
 			 
@@ -293,18 +251,11 @@ public class transportcombination1
 														sdate,
 														1
 													 );
-					//	in the date field of the above function should we send jsonFlight's date or date(k,sdate)
-					//we need to create another field to send jsonFlight's date separately
 					
 					// TODO : temporarily printing all the results
 					//results1.addAll(retvals1);
 					print(retvals1);
 					
-					/**
-					for(int i=0;i<retvals1.size();i++)
-					{
-						results1.add( retvals1.get(i) );						
-					}**/
 				}
 				catch(JSONException e)
 				{
@@ -318,11 +269,6 @@ public class transportcombination1
 			jsonFlight1=FlightsBetweenStations.flightsBetweenStations(via1,destination1,sdate,edate);
 			
 			jsonTrain1=TrainsBetweenStations.trainsBetweenStations(origin1,via1,train_class,sdate);
-			//for(int k=0;k<=diff;k++)
-			//{
-				/*start_date+=k;
-				sdate=sdate.substring(0,6)+Integer.toString(start_date);*/
-				//JSONObject json_Train2=TrainsBetweenStations.trainsBetweenStations(via,destination,"SL",date(k,sdate));
 			try
 			{
 				retvals2= Utils.concatanateRoutes(jsonFlight1, Utils.createResultTrain(jsonTrain1,sdate),sdate,origin+"("+origin +")",via+"("+via+")", destination+"("+destination+")",sdate,2);//note that bool is false
@@ -330,38 +276,26 @@ public class transportcombination1
 				//results2.addAll(retvals2);
 				print(retvals2);
 				
-				/**
-				for(int i=0;i<retvals2.size();i++)
-				{
-					results2.add( retvals2.get(i) );
-				}
-				*/
 			}
 			catch(JSONException e)
 			{
 				e.printStackTrace();
 			}
-			//}
 		}
-		
-		else if(o==1&&v==1&&d==1)
+		else if(o==1&&v==0&&d==1)
 		{
-			//System.out.println(sdate+" "+edate);
-			//jsonFlight1 = FlightsBetweenStations.flightsBetweenStations(origin1,destination1,sdate,sdate);
-			
+			//this condition is unnecessary coz only direct flights are needed to be found and rest is the same
+		}
+		else if(o==1&&v==1&&d==1)
+		{	
 			jsonFlight2 = FlightsBetweenStations.flightsBetweenStations(origin1,via1,sdate,sdate);
 			
 			JSONObject jsonFlight3 = FlightsBetweenStations.flightsBetweenStations(via1,destination1,sdate,edate);
-			
-			//System.out.println(jsonFlight3);
 			try
 			{
-				//retvals3= Utils.concatanateRoutes(jsonFlight2,jsonFlight3,sdate,origin1+"("+origin1 +")",via1+"("+via1+")", destination1+"("+destination1+")",sdate,3);
-				//System.out.println(retvals3);
 				
 				JSONObject json_train1 = TrainsBetweenStations.trainsBetweenStations(origin,via,train_class,sdate);
 				json_train1 = Utils.createResultTrain(json_train1,sdate);
-				//retvals2= Utils.concatanateRoutes(Utils.createResultTrain(json_train1,sdate),jsonFlight3,sdate,origin+"("+origin +")",via+"("+via+")", destination+"("+destination+")",sdate,2);
 				for(int k=0;!(date(k,sdate).equals(edate));k++)
 				{
 					retvals2 = Utils.concatanateRoutes(json_train1, jsonFlight3, date(k,sdate), origin+"("+origin +")", via+"("+via+")", destination+"("+destination+")", sdate, 2);										
@@ -377,22 +311,7 @@ public class transportcombination1
 					//results3.addAll(retvals3);
 					print(retvals3);
 					
-					/**
-					for(int i=0;i<retvals1.size();i++)
-					{
-						results1.add( retvals1.get(i) );
-					}
-					for(int i=0;i<retvals2.size();i++)
-					{
-						results2.add( retvals2.get(i) );
-					}**/
 				}
-				
-				/**
-				for(int i=0;i<retvals3.size();i++)
-				{
-					results3.add( retvals3.get(i) );
-				}**/
 			}
 			catch(JSONException e)
 			{
@@ -430,12 +349,8 @@ public class transportcombination1
 		//therefore retval is list of list of JSON objects
 		
 		//TODO: commented temporarily
-		//retval.add(results1);
-		//retval.add(results2);
-		//retval.add(results3);
-		//retval.add(results5);
 	
-		return retval;
+		return ;
 		
 	}
 }
