@@ -77,7 +77,7 @@ public class transportcombination1
 		{
 			e.printStackTrace();
 		}
-		try
+		/*try
 		{
 			for(int i=0;i<results.size();i++)
 			{
@@ -109,7 +109,7 @@ public class transportcombination1
 		catch(JSONException e)
 		{
 			e.printStackTrace();
-		}
+		}*/
 	}
 	
 	public static void print(List<JSONObject> retval)
@@ -142,6 +142,13 @@ public class transportcombination1
 			// do nothing for now
 		}
 	}
+	
+	/**
+	 * 
+	 * @param i
+	 * @param sdate
+	 * @return
+	 */
 	public static String date(int i, String sdate)
 	{
 		//String s=""; 
@@ -202,6 +209,24 @@ public class transportcombination1
 		//System.out.println(s);
 		return Integer.toString(start_date);
 	}
+	
+	/**
+	 * 
+	 * @param origin
+	 * @param destination
+	 * @param via
+	 * @param origin1
+	 * @param destination1
+	 * @param via1
+	 * @param classTrain
+	 * @param sdate
+	 * @param edate
+	 * @param o
+	 * @param v
+	 * @param d
+	 * @return
+	 * 
+	 */
 	public static List< List<JSONObject> > transportcombinations(	String origin,
 																	String destination,
 																	String via,
@@ -375,31 +400,30 @@ public class transportcombination1
 			}
 		}
 
+		/**
 		try{
 			jsonTrain1 = Utils.createResultTrain(jsonTrain1,sdate);
 			for(int k=0;!(date(k,sdate).equals(edate));k++)
 			{
-				/*start_date+=k;
-				sdate1=sdate.substring(0,6)+Integer.toString(start_date);;*/
+//				start_date+=k;
+//				sdate1=sdate.substring(0,6)+Integer.toString(start_date);
 				//System.out.println(!(date(k,sdate).equals(edate)));
 				jsonTrain2=TrainsBetweenStations.trainsBetweenStations(via,destination,train_class,date(k,sdate));						
 				
 					retvals5 = Utils.concatanateRoutes(jsonTrain1, Utils.createResultTrain(jsonTrain2, date(k,sdate)),date(k,sdate),origin+"("+origin +")",via+"("+via+")",destination+"("+destination+")",sdate,4);
 					//retvals5=Utils.concatanateRoutes(Utils.createResultTrain(jsonTrain1,sdate),Utils.createResultTrain(jsonTrain2, date(k,sdate)),true,date(k,sdate),origin+"("+origin +")",via+"("+via+")", destination+"("+destination+")",sdate);
 					//System.out.println(retvals5);
-					/**
-					for(int i=0;i<retvals5.size();i++)
-					{
-						//retvals5.get
-						//print(retvals5.get(i),date(k,sdate),origin,destination);
-						results5.add( retvals5.get(i));
-					}**/
+					
+//					for(int i=0;i<retvals5.size();i++)
+//					{
+//						results5.add( retvals5.get(i));
+//					}
 					//results5.addAll(retvals5);
 					print(retvals5);
 			}
 		} catch(JSONException e){
 			e.printStackTrace();
-		}
+		}*/
 
 		
 		//results is list of JSON object
